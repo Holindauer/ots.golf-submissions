@@ -13,14 +13,14 @@ The model, verifier and website are developed in
 | Upper bound | `formal/Submissions/GenericUpper/` | Smaller |
 
 Change only one directory per PR. Put the claim in `claim.txt` and export the required declarations
-from `Solution.lean`. Follow the [submission rules](https://github.com/leanEthereum/ots.golf-dev/blob/402365c883d87fd6651b41537948a58befa16f62/AGENTS.md), including import, file,
+from `Solution.lean`. Follow the [submission rules](https://github.com/leanEthereum/ots.golf-dev/blob/5854df78fd4df45271432a568f19ff87be7cbd43/AGENTS.md), including import, file,
 resource and axiom limits. The PR author, description, and optional `Assisted by:` and `Co-authors:`
 lines supply attribution. A verified improvement becomes a record when that exact PR head is merged.
 
 ## Check your proof
 
 Fork this repository, clone your fork with `--recurse-submodules`, and install elan and the
-tool prerequisites in [setup_tools.sh](https://github.com/leanEthereum/ots.golf-dev/blob/402365c883d87fd6651b41537948a58befa16f62/verifier/setup_tools.sh).
+tool prerequisites in [setup_tools.sh](https://github.com/leanEthereum/ots.golf-dev/blob/5854df78fd4df45271432a568f19ff87be7cbd43/verifier/setup_tools.sh).
 For an existing clone, run `git submodule update --init --recursive` first.
 
 From this repository's root:
@@ -34,13 +34,28 @@ python3 .contract/verifier/verify.py generic-lower --source .
 Replace `generic-lower` with `lower`, `disclosure-lower`, or `generic-upper` as appropriate.
 The verifier reads your edited submission root and checks it against the trusted contract.
 macOS verification is for trusted local development. Linux requires the bounded work storage
-and isolation described in the [deployment guide](https://github.com/leanEthereum/ots.golf-dev/blob/402365c883d87fd6651b41537948a58befa16f62/service/deploy/README.md).
+and isolation described in the [deployment guide](https://github.com/leanEthereum/ots.golf-dev/blob/5854df78fd4df45271432a568f19ff87be7cbd43/service/deploy/README.md).
 
 ## Contract pin
 
-`.contract` is a Git submodule of the core repository, pinned to commit `402365c883d87fd6651b41537948a58befa16f62`
-(contract ID `fd04517f1f73521d46ca98afb9c7e43d34df60f7d9fded3a1fdcb9817c3023fb`). Maintainers update this pin when the competition contract changes.
+`.contract` is a Git submodule of the core repository, pinned to commit `5854df78fd4df45271432a568f19ff87be7cbd43`
+(contract ID `63227eaf276295a77132d11d75ecc1740dd76e283a31762575af0264540f6fe6`). Maintainers update this pin when the competition contract changes.
 Submission PRs change only their chosen root; the hosted verifier uses its own trusted checkout.
 
 The initial roots contain checked reference certificates. Subsequent merged improvements live in
 this repository; merging a submission does not modify the model or website in the core repository.
+
+## Local website
+
+The core submodule includes the website and the committed Satoshi/Vitalik demo fixtures.
+After cloning with `--recurse-submodules`, start the preview with:
+
+```sh
+cd .contract/service
+uv sync --frozen
+./run-local.sh
+```
+
+Open `http://localhost:8000`. Startup populates a fresh database and preserves existing demo
+rows on subsequent runs. Set `OTS_DEMO_DATA=0` to start without seeding the fictional entries.
+The fixtures live with the website; checked submission proofs live in this repository.
