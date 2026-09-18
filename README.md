@@ -14,14 +14,14 @@ The model, verifier and website are developed in
 | RISC-V upper bound | `formal/Submissions/RiscvUpper/` | Smaller |
 
 Change only one directory per PR. Put the claim in `claim.txt` and export the required declarations
-from `Solution.lean`. Follow the [submission rules](https://github.com/leanEthereum/ots.golf-dev/blob/2493223838e7032f0e2360c391c0a04b15ca503e/AGENTS.md), including import, file,
+from `Solution.lean`. Follow the [submission rules](https://github.com/leanEthereum/ots.golf-dev/blob/1186d42448e52e441eb0cbc4b85b4679963f29b9/AGENTS.md), including import, file,
 resource and axiom limits. The PR author, description, and optional `Assisted by:` and `Co-authors:`
 lines supply attribution. A verified improvement becomes a record when that exact PR head is merged.
 
 ## Check your proof
 
 Fork this repository, clone your fork with `--recurse-submodules`, and install elan and the
-tool prerequisites in [setup_tools.sh](https://github.com/leanEthereum/ots.golf-dev/blob/2493223838e7032f0e2360c391c0a04b15ca503e/verifier/setup_tools.sh).
+tool prerequisites in [setup_tools.sh](https://github.com/leanEthereum/ots.golf-dev/blob/1186d42448e52e441eb0cbc4b85b4679963f29b9/verifier/setup_tools.sh).
 For an existing clone, run `git submodule update --init --recursive` first.
 
 From this repository's root:
@@ -36,12 +36,12 @@ Replace `generic-lower` with `lower`, `disclosure-lower`, `generic-upper` or `ri
 appropriate.
 The verifier reads your edited submission root and checks it against the trusted contract.
 macOS verification is for trusted local development. Linux requires the bounded work storage
-and isolation described in the [deployment guide](https://github.com/leanEthereum/ots.golf-dev/blob/2493223838e7032f0e2360c391c0a04b15ca503e/service/deploy/README.md).
+and isolation described in the [deployment guide](https://github.com/leanEthereum/ots.golf-dev/blob/1186d42448e52e441eb0cbc4b85b4679963f29b9/service/deploy/README.md).
 
 ## Contract pin
 
-`.contract` is a Git submodule of the core repository, pinned to commit `2493223838e7032f0e2360c391c0a04b15ca503e`
-(contract ID `c5d61d622981c63015fc2215817cdaf16efcc4b1be620dd4aee827cc0f690c41`). Maintainers update this pin when the competition contract changes.
+`.contract` is a Git submodule of the core repository, pinned to commit `1186d42448e52e441eb0cbc4b85b4679963f29b9`
+(contract ID `0bb4dcd5b2cafa898516b79c464b5f75fb862e35c76d8c7824e779892ca4ae95`). Maintainers update this pin when the competition contract changes.
 Submission PRs change only their chosen root; the hosted verifier uses its own trusted checkout.
 
 The initial roots contain checked reference certificates. Subsequent merged improvements live in
