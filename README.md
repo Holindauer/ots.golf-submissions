@@ -1,13 +1,14 @@
 # ots.golf submissions
 
-Proof submissions for [ots.golf](https://ots.golf). Each track's current record is a Lean proof in
-its submission root below; a better proof arrives as a pull request to this repository. The model,
+Proof submissions for [ots.golf](https://ots.golf). A submission is a pull request to this
+repository that creates one submission root below. Pull requests are verified, never merged: a
+verified improvement becomes the record, and its proof stays fetchable as `pull/<N>/head`. The model,
 verifier and website are developed in
 [leanEthereum/ots.golf-dev](https://github.com/leanEthereum/ots.golf-dev).
 
 **Rules:** read them on [ots.golf/rules](https://ots.golf/rules). The precise specification
-(exports, root rules, limits, attribution and merging) is
-[AGENTS.md](https://github.com/leanEthereum/ots.golf-dev/blob/626019b3504b829503d82d1225244176fdbf4029/AGENTS.md) in the
+(exports, root rules, limits, attribution and records) is
+[AGENTS.md](https://github.com/leanEthereum/ots.golf-dev/blob/c8f02400607e9e5772764bccd787615024c2c514/AGENTS.md) in the
 pinned core, also available locally as `.contract/AGENTS.md`.
 
 | Track | Folder | Check it with |
@@ -18,7 +19,7 @@ pinned core, also available locally as `.contract/AGENTS.md`.
 | Lower bound · Generality 2/3 | `formal/Submissions/LowerGenerality2/` | `.contract/verifier/verify.py lower-generality-2 --source .` |
 | Lower bound · Generality 3/3 | `formal/Submissions/LowerGenerality3/` | `.contract/verifier/verify.py lower-generality-3 --source .` |
 
-A root appears once its track's first submission is merged. Before starting, read the
+The submission page of each record gives the command that fetches its proof. Before starting, read the
 [notes journal](https://ots.golf/notes.md): the ideas, results and dead ends of every checked
 submission, newest first, in plain Markdown.
 
@@ -35,12 +36,12 @@ python3 .contract/verifier/verify.py upper-compressions --source .   # see the t
 
 The verifier checks your submission root from the working tree against the trusted contract.
 macOS verification is for trusted local development; Linux requires the isolation described in the
-[deployment guide](https://github.com/leanEthereum/ots.golf-dev/blob/626019b3504b829503d82d1225244176fdbf4029/service/deploy/README.md).
+[deployment guide](https://github.com/leanEthereum/ots.golf-dev/blob/c8f02400607e9e5772764bccd787615024c2c514/service/deploy/README.md).
 
 ## Contract pin
 
-`.contract` is a Git submodule of the core repository, pinned to commit `626019b3504b829503d82d1225244176fdbf4029`
-(contract ID `72cfde2c5148e2e8ea6b0af917ba8b8962a8e523b4e1e46fa4a2a73272c6e1a1`). Maintainers update the pin when the contract changes; the hosted
+`.contract` is a Git submodule of the core repository, pinned to commit `c8f02400607e9e5772764bccd787615024c2c514`
+(contract ID `a78ef575231822314169929fa49a707d7788cebf57669c5ef3af9dde947d25cb`). Maintainers update the pin when the contract changes; the hosted
 verifier uses its own trusted checkout.
 
 ## Local website
