@@ -172,11 +172,11 @@ theorem no_zero_verifier (hc : S.Correct) (ha : S.SigningFailureAtMost (1 / 2))
 
 /-- The paper budgets are far below the cost at which a half-success forgery is allowed. -/
 theorem paper_attack_gap :
-    (((1024 + 2 ^ 21 : ℕ) : ℝ≥0∞) / 2 ^ paperParams.securityBits) < 1 / 2 := by
+    (((1024 + 2 ^ 20 : ℕ) : ℝ≥0∞) / 2 ^ paperParams.securityBits) < 1 / 2 := by
   apply (ENNReal.toReal_lt_toReal (by finiteness) (by finiteness)).mp
   norm_num [ENNReal.toReal_div, paperParams]
 
-/-- Every admissible, weakly secure algorithm under the paper limits needs a verification budget
+/-- Every admissible, secure algorithm under the paper limits needs a verification budget
 of at least one compression, for any signing-failure allowance at most one half. -/
 theorem paper_lowerBound_one {ε : ℝ≥0∞} (hε : ε ≤ 1 / 2) :
     AlgorithmVerificationLowerBound paperParams AlgorithmScheme.paperLimits ε 1 := by
@@ -186,7 +186,7 @@ theorem paper_lowerBound_one {ε : ℝ≥0∞} (hε : ε ≤ 1 / 2) :
   subst v
   have ha : S.SigningFailureAtMost (1 / 2) := fun m => (hA.signingFailure m).trans hε
   exact no_zero_verifier S hA.correct ha hA.keygenCost hA.signCost
-    (0 : Message paperParams) (1 : Message paperParams) (by decide) paper_attack_gap hS hv
+    (0 : Message paperParams) (1 : Message paperParams) (by decide) paper_attack_gap hS.weaklySecure hv
 
 /-- The generic lower certificate with signing failure at most one half. -/
 theorem candidate :
