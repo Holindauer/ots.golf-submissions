@@ -1,5 +1,31 @@
 {
   "records": {
+    "lower-generality-1": {
+      "claim": 90,
+      "commit": "a4cec3eb0b10b6fbd2bee3eca8e74094d631d67a",
+      "contract": "a78ef575231822314169929fa49a707d7788cebf57669c5ef3af9dde947d25cb",
+      "contract_commit": "2857c4a4c1ad30157b6c689ea675de842f1c6fef",
+      "finished_at": "2026-09-19T22:55:00.940708Z",
+      "id": "54b84501dae563c243b146f31600e291",
+      "pr_number": 1,
+      "pr_url": "https://github.com/leanEthereum/ots.golf-submissions/pull/1",
+      "source_archive": {
+        "commit": "a4cec3eb0b10b6fbd2bee3eca8e74094d631d67a",
+        "contract": "a78ef575231822314169929fa49a707d7788cebf57669c5ef3af9dde947d25cb",
+        "file_count": 29,
+        "sha256": "db3a4376d48388f60e413d3fe1ebfe84cf84f6c1d848c590300981b8d7b6aacb",
+        "size_bytes": 179466,
+        "source_repo": "https://github.com/leanEthereum/ots.golf-submissions.git",
+        "submission_root": "formal/Submissions/LowerGenerality1",
+        "total_bytes": 170234,
+        "track": "lower-generality-1",
+        "version": 1
+      },
+      "source_ref": "refs/tags/ots-source/54b84501dae563c243b146f31600e291",
+      "source_tree": "866aeac37615a49bc91f589c713b7c925d47cf8d",
+      "submission_root": "formal/Submissions/LowerGenerality1",
+      "track": "lower-generality-1"
+    },
     "lower-generality-2": {
       "claim": 18,
       "commit": "7d7a2e130cad6362d16e65f0e8c0c6aa84015735",
