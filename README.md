@@ -55,3 +55,8 @@ uv sync --frozen
 ```
 
 Set `OTS_PHONY=0` to start without the demo entries.
+
+## Credits
+
+The competition and chart were inspired by [better.codes](https://better.codes),
+[zk.golf](https://zk.golf) and [yukon.org](https://www.yukon.org/). License: Apache 2.0.
