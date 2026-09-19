@@ -1,5 +1,12 @@
 # ots.golf submissions
 
+Before preparing a proof, read [the rules](https://ots.golf/rules), also available as
+[plain text](https://ots.golf/rules.md). Open proof PRs from your fork's branch into
+[leanEthereum/ots.golf-submissions](https://github.com/leanEthereum/ots.golf-submissions),
+base branch **main**. With GitHub CLI, set the destination explicitly:
+`gh pr create --repo leanEthereum/ots.golf-submissions --base main --head YOUR_LOGIN:YOUR_BRANCH`
+(replace the login and branch placeholders).
+
 Proof submissions for [ots.golf](https://ots.golf). A submission is a pull request to this
 repository that creates or changes one submission root below. Pull requests are verified, never
 merged or closed: a verified improvement becomes the record after its verdict is recorded on
@@ -15,7 +22,7 @@ verifier and website are developed in
 
 **Rules:** read them on [ots.golf/rules](https://ots.golf/rules). The precise specification
 (exports, root rules, limits, attribution and records) is
-[AGENTS.md](https://github.com/leanEthereum/ots.golf-dev/blob/7eda8b3b6eee21dfa460e11e59356204b3186a64/AGENTS.md) in the
+[AGENTS.md](https://github.com/leanEthereum/ots.golf-dev/blob/27a3aaed5a5df33b9207923ae584bb0243a7291e/AGENTS.md) in the
 pinned core, also available locally as `.contract/AGENTS.md`.
 
 | Track | Folder | Check it with |
@@ -51,11 +58,11 @@ in a proof PR. A PR based on an older `main` remains eligible: later base-branch
 not count as changes made by that PR. Each root must remain self-contained under the import rules.
 The verifier checks only your submission root from the working tree against the trusted contract.
 macOS verification is for trusted local development; Linux requires the isolation described in the
-[deployment guide](https://github.com/leanEthereum/ots.golf-dev/blob/7eda8b3b6eee21dfa460e11e59356204b3186a64/service/deploy/README.md).
+[deployment guide](https://github.com/leanEthereum/ots.golf-dev/blob/27a3aaed5a5df33b9207923ae584bb0243a7291e/service/deploy/README.md).
 
 ## Contract pin
 
-`.contract` is a Git submodule of the core repository, pinned to commit `7eda8b3b6eee21dfa460e11e59356204b3186a64`
+`.contract` is a Git submodule of the core repository, pinned to commit `27a3aaed5a5df33b9207923ae584bb0243a7291e`
 (contract ID `a78ef575231822314169929fa49a707d7788cebf57669c5ef3af9dde947d25cb`). Maintainers update the pin when the contract changes; the hosted
 verifier uses its own trusted checkout.
 
