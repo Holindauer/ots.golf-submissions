@@ -17,7 +17,7 @@ Before starting, read the [notes journal](https://ots.golf/notes.md), plain Mark
 the ideas, results and dead ends of every checked submission, newest first.
 
 Change only one directory per PR. Put the claim in `claim.txt` and export the required declarations
-from `Solution.lean`. Follow the [submission rules](https://github.com/leanEthereum/ots.golf-dev/blob/0803ce9d00679b083df5ab8ee8876b1d62b4d7cd/AGENTS.md), including import, file,
+from `Solution.lean`. Follow the [submission rules](https://github.com/leanEthereum/ots.golf-dev/blob/34531e6454b00cdf82259f978c34c4330971fa97/AGENTS.md), including import, file,
 resource and axiom limits. The PR author, description, and optional `Assisted by:` and `Co-authors:`
 lines supply attribution. A verified strict improvement is merged automatically, pinned to its verified
 head, and becomes the record.
@@ -30,7 +30,7 @@ fetchable from this repository as `pull/<N>/head`, even after its fork is delete
 ## Check your proof
 
 Fork this repository, clone your fork with `--recurse-submodules`, and install elan and the
-tool prerequisites in [setup_tools.sh](https://github.com/leanEthereum/ots.golf-dev/blob/0803ce9d00679b083df5ab8ee8876b1d62b4d7cd/verifier/setup_tools.sh).
+tool prerequisites in [setup_tools.sh](https://github.com/leanEthereum/ots.golf-dev/blob/34531e6454b00cdf82259f978c34c4330971fa97/verifier/setup_tools.sh).
 For an existing clone, run `git submodule update --init --recursive` first.
 
 From this repository's root:
@@ -45,12 +45,12 @@ Replace `generic-lower` with `lower`, `disclosure-lower`, `generic-upper` or `ri
 appropriate.
 The verifier reads your edited submission root and checks it against the trusted contract.
 macOS verification is for trusted local development. Linux requires the bounded work storage
-and isolation described in the [deployment guide](https://github.com/leanEthereum/ots.golf-dev/blob/0803ce9d00679b083df5ab8ee8876b1d62b4d7cd/service/deploy/README.md).
+and isolation described in the [deployment guide](https://github.com/leanEthereum/ots.golf-dev/blob/34531e6454b00cdf82259f978c34c4330971fa97/service/deploy/README.md).
 
 ## Contract pin
 
-`.contract` is a Git submodule of the core repository, pinned to commit `0803ce9d00679b083df5ab8ee8876b1d62b4d7cd`
-(contract ID `2461d3b5a189f6ad9d7e730bad5b38ea7c30e2b9d56bc943c9457ee7f6623fe4`). Maintainers update this pin when the competition contract changes.
+`.contract` is a Git submodule of the core repository, pinned to commit `34531e6454b00cdf82259f978c34c4330971fa97`
+(contract ID `de0431ce8bbe4fac4b9d788b0ab5c308bdf45df8c85abb299179ec3754811d69`). Maintainers update this pin when the competition contract changes.
 Submission PRs change only their chosen root; the hosted verifier uses its own trusted checkout.
 
 The initial roots contain checked reference certificates. Subsequent merged improvements live in
