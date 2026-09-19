@@ -77,6 +77,32 @@
       "source_tree": "a375c50f5cd7e77b4399cbf47218584d4963eec6",
       "submission_root": "formal/Submissions/LowerGenerality3",
       "track": "lower-generality-3"
+    },
+    "upper-compressions": {
+      "claim": 104,
+      "commit": "64165c0c55807eae3d308615226d0f2a8696a5d8",
+      "contract": "a78ef575231822314169929fa49a707d7788cebf57669c5ef3af9dde947d25cb",
+      "contract_commit": "2857c4a4c1ad30157b6c689ea675de842f1c6fef",
+      "finished_at": "2026-09-19T23:02:42.079315Z",
+      "id": "1a7a14adc5e5d490e1886f49a81edcd8",
+      "pr_number": 4,
+      "pr_url": "https://github.com/leanEthereum/ots.golf-submissions/pull/4",
+      "source_archive": {
+        "commit": "64165c0c55807eae3d308615226d0f2a8696a5d8",
+        "contract": "a78ef575231822314169929fa49a707d7788cebf57669c5ef3af9dde947d25cb",
+        "file_count": 39,
+        "sha256": "82e52d474b43232ddf0786c1dd84336548a1ac114859eeacb63c8153c1de5a2e",
+        "size_bytes": 491373,
+        "source_repo": "https://github.com/leanEthereum/ots.golf-submissions.git",
+        "submission_root": "formal/Submissions/UpperCompressions",
+        "total_bytes": 479420,
+        "track": "upper-compressions",
+        "version": 1
+      },
+      "source_ref": "refs/tags/ots-source/1a7a14adc5e5d490e1886f49a81edcd8",
+      "source_tree": "039373c8a41aeece30f13d45ce788d2e115d4b0f",
+      "submission_root": "formal/Submissions/UpperCompressions",
+      "track": "upper-compressions"
     }
   },
   "version": 1
