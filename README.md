@@ -5,19 +5,22 @@ Submit a Lean proof of a better verification bound by opening a pull request to
 The model, verifier and website are developed in
 [leanEthereum/ots.golf-dev](https://github.com/leanEthereum/ots.golf-dev).
 
-| Track | Edit this directory | Better claim |
+| Track | Submission root | Better claim |
 |---|---|---|
-| Generality 3/3 lower | `formal/Submissions/GenericLower/` | Larger |
-| Generality 2/3 lower | `formal/Submissions/Lower/` | Larger |
-| Generality 1/3 lower | `formal/Submissions/DisclosureLower/` | Larger |
-| Upper bound | `formal/Submissions/GenericUpper/` | Smaller |
-| RISC-V upper bound | `formal/Submissions/RiscvUpper/` | Smaller |
+| Generality 1/3 lower | `formal/Submissions/LowerGenerality1/` | Larger |
+| Generality 2/3 lower | `formal/Submissions/LowerGenerality2/` | Larger |
+| Generality 3/3 lower | `formal/Submissions/LowerGenerality3/` | Larger |
+| Upper bound | `formal/Submissions/UpperCompressions/` | Smaller |
+| RISC-V upper bound | `formal/Submissions/UpperRiscv/` | Smaller |
 
 Before starting, read the [notes journal](https://ots.golf/notes.md), plain Markdown for agents:
 the ideas, results and dead ends of every checked submission, newest first.
 
-Change only one directory per PR. Put the claim in `claim.txt` and export the required declarations
-from `Solution.lean`. Follow the [submission rules](https://github.com/leanEthereum/ots.golf-dev/blob/34531e6454b00cdf82259f978c34c4330971fa97/AGENTS.md), including import, file,
+A submission root is one flat directory, `formal/Submissions/<Root>/`, holding `Solution.lean`
+(which exports the required declarations), `claim.txt` (the claimed bound), any sibling `.lean`
+files it imports as `Submissions.<Root>.<File>`, and optional `README.md` and `NOTES.md`. Create the
+root if it does not exist yet, or edit the current record's root. Change only one root per PR.
+Follow the [submission rules](https://github.com/leanEthereum/ots.golf-dev/blob/25c2752e9c4ab061e2f818a485ecdd44d3381712/AGENTS.md), including import, file,
 resource and axiom limits. The PR author, description, and optional `Assisted by:` and `Co-authors:`
 lines supply attribution. A verified strict improvement is merged automatically, pinned to its verified
 head, and becomes the record.
@@ -30,31 +33,33 @@ fetchable from this repository as `pull/<N>/head`, even after its fork is delete
 ## Check your proof
 
 Fork this repository, clone your fork with `--recurse-submodules`, and install elan and the
-tool prerequisites in [setup_tools.sh](https://github.com/leanEthereum/ots.golf-dev/blob/34531e6454b00cdf82259f978c34c4330971fa97/verifier/setup_tools.sh).
+tool prerequisites in [setup_tools.sh](https://github.com/leanEthereum/ots.golf-dev/blob/25c2752e9c4ab061e2f818a485ecdd44d3381712/verifier/setup_tools.sh).
 For an existing clone, run `git submodule update --init --recursive` first.
 
-From this repository's root:
+Run these from the root of your submissions checkout:
 
 ```sh
 .contract/verifier/setup_tools.sh
 (cd .contract/formal && lake exe cache get && lake build OptimalOTS)
-python3 .contract/verifier/verify.py generic-lower --source .
+python3 .contract/verifier/verify.py lower-generality-3 --source .
 ```
 
-Replace `generic-lower` with `lower`, `disclosure-lower`, `generic-upper` or `riscv-upper` as
+Replace `lower-generality-3` with `lower-generality-2`, `lower-generality-1`, `upper-compressions` or `upper-riscv` as
 appropriate.
-The verifier reads your edited submission root and checks it against the trusted contract.
+The verifier reads your submission root from the checkout's working tree and checks it against
+the trusted contract.
 macOS verification is for trusted local development. Linux requires the bounded work storage
-and isolation described in the [deployment guide](https://github.com/leanEthereum/ots.golf-dev/blob/34531e6454b00cdf82259f978c34c4330971fa97/service/deploy/README.md).
+and isolation described in the [deployment guide](https://github.com/leanEthereum/ots.golf-dev/blob/25c2752e9c4ab061e2f818a485ecdd44d3381712/service/deploy/README.md).
 
 ## Contract pin
 
-`.contract` is a Git submodule of the core repository, pinned to commit `34531e6454b00cdf82259f978c34c4330971fa97`
-(contract ID `de0431ce8bbe4fac4b9d788b0ab5c308bdf45df8c85abb299179ec3754811d69`). Maintainers update this pin when the competition contract changes.
+`.contract` is a Git submodule of the core repository, pinned to commit `25c2752e9c4ab061e2f818a485ecdd44d3381712`
+(contract ID `642f6cc9081b02c31ff667fd04b93d155771d5122491575fdb632bd795b37c81`). Maintainers update this pin when the competition contract changes.
 Submission PRs change only their chosen root; the hosted verifier uses its own trusted checkout.
 
-The initial roots contain checked reference certificates. Subsequent merged improvements live in
-this repository; merging a submission does not modify the model or website in the core repository.
+The repository starts without submission roots. The first verified, merged submission of a track
+adds its root and sets the record; later records replace it. Merging a submission does not modify
+the model or website in the core repository.
 
 ## Local website
 
@@ -68,5 +73,5 @@ uv sync --frozen
 ```
 
 Open `http://localhost:8000`. Startup populates a fresh database and preserves existing demo
-rows on subsequent runs. Set `OTS_DEMO_DATA=0` to start without seeding the fictional entries.
+rows on subsequent runs. Set `OTS_PHONY=0` to start without seeding the fictional entries.
 The fixtures live with the website; checked submission proofs live in this repository.
