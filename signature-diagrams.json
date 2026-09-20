@@ -1,0 +1,29 @@
+{
+  "version": 1,
+  "diagrams": {
+    "440fbe4103a5cfff1f213e25ac09bfd9": {
+      "commit": "ceeb8503c3950869440af1cb6fa69b52b79044fc",
+      "alt": "54 chains of 18 steps feed 18 ternary group hashes and then the public key. The low 128 digest bits select a whole disclosure pattern through a fixed enumeration, accepting indices below 45 \u00d7 2\u00b9\u2070\u2079. Signing retries the nonce otherwise. Each cut reveals six group values and 36 chain values with 84 chain hashes remaining. The drawing illustrates an allowed cut, without claiming a particular digest index. Blue dots are revealed values, blue paths are recomputed, and grey branches are unused for this cut.",
+      "image": "signature-diagrams/shallow-102.svg",
+      "contract": "a78ef575231822314169929fa49a707d7788cebf57669c5ef3af9dde947d25cb"
+    },
+    "ad5f125ca8ee77f306dc5fa1f0854ed9": {
+      "commit": "2dfaf14e5a570c1ceb9637a55d4b60dcc65c3a13",
+      "alt": "54 chains of 18 steps feed 18 ternary group hashes and then the public key. The low 127 digest bits select a whole disclosure pattern through a fixed enumeration, accepting indices below 45 \u00d7 2\u00b9\u2070\u2078. Signing retries the nonce otherwise. Each cut reveals six group values and 36 chain values with 82 chain hashes remaining. The drawing illustrates an allowed cut, without claiming a particular digest index. Blue dots are revealed values, blue paths are recomputed, and grey branches are unused for this cut.",
+      "image": "signature-diagrams/shallow-100.svg",
+      "contract": "a78ef575231822314169929fa49a707d7788cebf57669c5ef3af9dde947d25cb"
+    },
+    "62a2338b982a2519abca182bc3772687": {
+      "commit": "2d25dd58d7a2fa1fe3ec1bf13be5240ccd04631f",
+      "image": "signature-diagrams/flat-chains.svg",
+      "alt": "32 parallel chains, each with 15 hash steps. Blue filled dots mark the 32 values revealed in one signature. Blue paths hash them forward to the chain endpoints, which are used to reconstruct the public key. Grey nodes are unused during verification of this signature. The low 128 digest bits split into 32 four-bit digits; signing tries nonces until their sum is 160. Each digit gives the remaining hash steps for its chain.",
+      "contract": "a78ef575231822314169929fa49a707d7788cebf57669c5ef3af9dde947d25cb"
+    },
+    "1a7a14adc5e5d490e1886f49a81edcd8": {
+      "commit": "64165c0c55807eae3d308615226d0f2a8696a5d8",
+      "image": "signature-diagrams/forest.svg",
+      "alt": "A forest of 54 chains with 14 hash steps each. Groups of three chain endpoints are hashed into 18 group digests; groups of three digests into six subtree digests; these form the public key. A sample disclosure cut is highlighted: blue filled dots are revealed values, blue outlined nodes are recomputed, and grey branches are unused for this cut. The low 128 digest bits select an index below 2^115 in a fixed enumeration of disclosure cuts, each revealing at most 42 values. The drawn cut illustrates this family without claiming a particular digest index.",
+      "contract": "a78ef575231822314169929fa49a707d7788cebf57669c5ef3af9dde947d25cb"
+    }
+  }
+}
