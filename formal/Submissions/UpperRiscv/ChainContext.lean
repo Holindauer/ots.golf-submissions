@@ -57,7 +57,6 @@ theorem slot_bounds (k : ℕ) (hk : k < 28) :
 
 /-- Facts fixed throughout the chain phase. -/
 structure Ctx (s : MachineState) (index : Idx) (pk : PublicKey) : Prop where
-  payloadReg : s.getReg .x9 = W payloadAddr
   pk0 : s.getReg .x30 = pk.extractLsb' 0 64
   pk1 : s.getReg .x31 = pk.extractLsb' 64 64
   call : s.getReg .x5 = Riscv.hashCall
@@ -70,7 +69,7 @@ structure Ctx (s : MachineState) (index : Idx) (pk : PublicKey) : Prop where
 
 /-- The registers of the context. -/
 def CtxReg (r : Reg) : Prop :=
-  r = .x9 ∨ r = .x30 ∨ r = .x31 ∨ r = .x5 ∨ r = .x11 ∨ r = .x13
+  r = .x30 ∨ r = .x31 ∨ r = .x5 ∨ r = .x11 ∨ r = .x13
 
 /-- A memory frame outside the answer region of chain `k`, `[slotAddr k - 8, slotAddr k + 24)`. -/
 def SlotFrame (s t : MachineState) (k : ℕ) : Prop :=
@@ -82,12 +81,11 @@ theorem Ctx.frame {s t : MachineState} {index : Idx} {pk : PublicKey}
     (regs : ∀ r, CtxReg r → t.getReg r = s.getReg r) (mem : SlotFrame s t k) :
     Ctx t index pk := by
   have hslot := slot_bounds k hk
-  refine ⟨?_, ?_, ?_, ?_, ?_, ?_, ?_⟩
-  · rw [regs .x9 (Or.inl rfl)]; exact ctx.payloadReg
-  · rw [regs .x30 (Or.inr (Or.inl rfl))]; exact ctx.pk0
-  · rw [regs .x31 (Or.inr (Or.inr (Or.inl rfl)))]; exact ctx.pk1
-  · rw [regs .x5 (Or.inr (Or.inr (Or.inr (Or.inl rfl))))]; exact ctx.call
-  · rw [regs .x11 (Or.inr (Or.inr (Or.inr (Or.inr (Or.inl rfl)))))]; exact ctx.length
+  refine ⟨?_, ?_, ?_, ?_, ?_, ?_⟩
+  · rw [regs .x30 (Or.inl rfl)]; exact ctx.pk0
+  · rw [regs .x31 (Or.inr (Or.inl rfl))]; exact ctx.pk1
+  · rw [regs .x5 (Or.inr (Or.inr (Or.inl rfl)))]; exact ctx.call
+  · rw [regs .x11 (Or.inr (Or.inr (Or.inr (Or.inl rfl))))]; exact ctx.length
   · intro j
     obtain ⟨l1, l2, l3⟩ := laneAddr_bounds j j.isLt
     have e : t.getHalfword (W (laneAddr j)) = s.getHalfword (W (laneAddr j)) := by
@@ -100,7 +98,7 @@ theorem Ctx.frame {s t : MachineState} {index : Idx} {pk : PublicKey}
       omega
     rw [e]
     exact ctx.lanes j
-  · rw [regs .x13 (Or.inr (Or.inr (Or.inr (Or.inr (Or.inr rfl)))))]; exact ctx.sigLen
+  · rw [regs .x13 (Or.inr (Or.inr (Or.inr (Or.inr rfl))))]; exact ctx.sigLen
 
 /-- The values of chains `k` and later are still their disclosed values. -/
 def PayloadFrom (s : MachineState) (payload : List Bool) (k : ℕ) : Prop :=

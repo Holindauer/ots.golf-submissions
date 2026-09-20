@@ -23,7 +23,7 @@ attribute [local irreducible] Forest.fixedPositions Forest.fixedDigits
 
 variable (index : Idx) (payload : List Bool) (pk : PublicKey)
 
-def rootLin : Code := [.ADDI .x10 .x9 (imm12 (-8)), .ADDI .x11 .x13 (imm12 (-64))]
+def rootLin : Code := [.ADDI .x10 .x10 (imm12 (-656)), .ADDI .x11 .x13 (imm12 (-64))]
 
 /-- Where the root answer is written: the answer buffer of the last chain. -/
 def rootOut : ℕ := slotAddr 27 - 8
@@ -304,16 +304,18 @@ theorem rootDecision_refines (s : MachineState) (x : graph.Assignment) (fuel : �
     simp only [rootLin, List.foldl_cons, List.foldl_nil, execInstrBr, MachineState.getReg_setPC,
       getReg_setReg_ite]
     simp [Ne.symm h10, Ne.symm h11, h10, h11]
+  have s10 : s.getReg .x10 = W (slotAddr 27) := by
+    rw [inv.input]
+    unfold prevInput slotAddr payloadAddr
+    norm_num
   have w10 : w.getReg .x10 = W regionAddr := by
     rw [hw]
     simp only [rootLin, List.foldl_cons, List.foldl_nil, execInstrBr, MachineState.getReg_setPC,
       getReg_setReg_ite]
-    simp only [show ¬ (Reg.x10 = Reg.x11) by decide, show ¬ (Reg.x10 = Reg.x12) by decide,
-      false_and, if_false, true_and, ne_eq, reduceCtorEq, not_false_eq_true, if_true,
-      show ¬ (Reg.x9 = Reg.x11) by decide, show ¬ (Reg.x9 = Reg.x12) by decide,
-      show ¬ (Reg.x9 = Reg.x10) by decide, inv.ctx.payloadReg]
-    rw [W_add_imm _ _ (by norm_num) (by norm_num) (by unfold payloadAddr; omega)
-      (by unfold payloadAddr; omega)]
+    simp only [show ¬ (Reg.x10 = Reg.x11) by decide, false_and, if_false, true_and, ne_eq,
+      reduceCtorEq, not_false_eq_true, if_true, s10]
+    rw [W_add_imm _ _ (by norm_num) (by norm_num) (by unfold slotAddr payloadAddr; omega)
+      (by unfold slotAddr payloadAddr; omega)]
     rfl
   have w11 : w.getReg .x11 = 5440 := by
     rw [hw]

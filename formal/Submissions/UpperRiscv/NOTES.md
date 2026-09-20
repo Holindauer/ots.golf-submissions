@@ -1,9 +1,9 @@
-# upper-riscv: 438 cycles — the same scheme, seven cycles of layout
+# upper-riscv: 437 cycles — the same scheme, eight cycles of layout
 
 ## Idea
 
 The 445-cycle image is the bare-chain scheme; nothing in the scheme graph or the security
-argument moves here except one constant. The seven cycles come from the machine layout and the
+argument moves here except one constant. The eight cycles come from the machine layout and the
 availability threshold.
 
 - **Target 215 instead of 216 (−1).** The sum of the 28 fields is the number of chain hash
@@ -35,8 +35,11 @@ availability threshold.
   and `x11` (5440); `x12` still points eight bytes below the last slot, which is a valid, aligned
   output range that overlaps only the region already read. The decision reads the answer from
   there. `rootLin` is two instructions.
-- **Cost.** `63 (index) + Σ_k (4 + field_k + 1) + 20 (root) = 63 + 112 + 243 + 20 = 438`.
-  Image length 898.
+- **No payload register (−1).** The root pointer `sig + 8` is 656 bytes below the last slot,
+  where `x10` stands after chain 27, so `ADDI x10, x10, −656` replaces `ADDI x10, x9, −8` and
+  the prefix no longer sets `x9`.
+- **Cost.** `62 (index) + Σ_k (4 + field_k + 1) + 20 (root) = 62 + 112 + 243 + 20 = 437`.
+  Image length 897.
 
 ## Proof changes
 
@@ -49,8 +52,8 @@ stores relative to `x10`), `IndexPhase.lean` (in-place index hash: `prefix_memBi
 now excludes the 64 lane bytes below the signature), `ChainContext.lean` (`Ctx` without the data
 register; `prevInput`), `ChainPrologue.lean` (`prologue_step0` for the two immediates,
 `lane_offset` relative to the answer buffer), `ChainBlock.lean` (`ChainsInv.out` carries the
-last answer buffer to the root), `RootPhase.lean` (`rootOut = slotAddr 27 − 8`), `Verifier.lean`
-(`cycleBound = 438`).
+last answer buffer to the root), `RootPhase.lean` (`rootOut = slotAddr 27 − 8`, the root pointer from `ChainsInv.input`),
+`Verifier.lean` (`cycleBound = 437`).
 
 ## What is left
 
@@ -63,6 +66,14 @@ last answer buffer to the root), `RootPhase.lean` (`rootOut = slotAddr 27 − 8`
 - Root 11 blocks and 7 decision cycles are fixed by the 5440-bit root and the two-word compare.
 - Target 215 is the floor for this index distribution; a differently shaped index (non-uniform
   field widths) changes `compW` and might allow 214 with the same 5504-bit signature.
+- Two more cycles are conceivable but need the scheme's verifier to be specified on signatures
+  of every length: if the index length were `x13 ^ 5888` and the root length `x13 ^ 192`, the
+  length check (`LD` + `BEQ`) could go, but the Lean verifier would then have to make the same
+  odd-length queries on wrong-length inputs, and the security proof would have to charge
+  root-preimage events for every query length. One more cycle would come from hashing
+  `pk ‖ message ‖ nonce` (512 bits, still one block) straight from the loader's public-key
+  pointer, which saves the move of the message pointer but puts the public key into the index
+  query and hence into the index-side proofs.
 
 ---
 
