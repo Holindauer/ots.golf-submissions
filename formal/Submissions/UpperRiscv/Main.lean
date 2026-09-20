@@ -5,7 +5,7 @@ import Submissions.UpperRiscv.Assembly
 
 `forestScheme_secure`: the flat forest satisfies `GScheme.Secure`, the
 127-bit strong unforgeability requirement of `OptimalOTS.Dag`, and every signature verifies
-in `173` compressions (`forestScheme_verifyCost`).
+in `170` compressions (`forestScheme_verifyCost`).
 
 For a budget `B ≤ 2 ^ 127` the bound `probTrue ≤ 2 ε (B - 492) = (B - 492) / 2 ^ 127 < B / 2 ^ 127`
 of `Forest.main_bound` applies; for larger budgets the requirement holds trivially since

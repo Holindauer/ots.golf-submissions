@@ -4,7 +4,7 @@ import Submissions.UpperRiscv.IndexArith
 # The index phase
 
 The machine saves the public key, copies the nonce below the message, hashes `nonce ‖ message`,
-rejects wrong lengths, builds the lane words, rejects unless the nibbles sum to `160`, and loads
+rejects wrong lengths, builds the lane words, rejects unless the nibbles sum to `157`, and loads
 the remaining level tags: the state `afterIndex` then satisfies the chain-phase invariant.
 -/
 
@@ -247,7 +247,7 @@ def S3 : MachineState := lenBlock.foldl execInstrBr (S2 pk m bits answer)
 
 def S4 : MachineState := (S3 pk m bits answer).setPC ((S3 pk m bits answer).pc + 16)
 
-def sumOps : Code := [.MUL .x27 .x27 .x23, .SRLI .x27 .x27 48, .XORI .x27 .x27 1280]
+def sumOps : Code := [.MUL .x27 .x27 .x23, .SRLI .x27 .x27 48, .XORI .x27 .x27 1256]
 
 theorem sumCheck_parts : sumCheck = sumOps ++ ([.BEQ .x27 .x0 16] ++ reject) := rfl
 
@@ -401,7 +401,7 @@ theorem mainBlock_ready : Riscv.LinearReady (S4 pk m bits answer) mainBlock := b
   simp [sumOps, Riscv.LinearReady, Riscv.linearInstruction, Riscv.memoryReady]
 
 theorem S5_x27 : (S5 pk m bits answer).getReg .x27 =
-    (((laneSum (S45 pk m bits answer) 8) * W (broadcast 1)) >>> 48) ^^^ signExtend12 1280 := by
+    (((laneSum (S45 pk m bits answer) 8) * W (broadcast 1)) >>> 48) ^^^ signExtend12 1256 := by
   have L := (lanes_effect pk m bits answer).2
   have x23 : (S46 pk m bits answer).getReg .x23 = W (broadcast 1) := by
     rw [L.regs .x23 (by decide) (by decide)]; exact (loadWords_effect pk m bits answer).x23
@@ -428,11 +428,11 @@ theorem sum_iff : (S5 pk m bits answer).getReg .x27 = (S5 pk m bits answer).getR
   have LE := loadWords_effect pk m bits answer
   rw [S5_x27, accepted_iff_wordSum, show (S5 pk m bits answer).getReg .x0 = 0#64 from rfl,
     BitVec.xor_eq_zero_iff]
-  have e1280 : signExtend12 (1280 : BitVec 12) = W 1280 := by decide
+  have e1256 : signExtend12 (1256 : BitVec 12) = W 1256 := by decide
   have top := top_laneSum (S45 pk m bits answer)
   rw [show (S45 pk m bits answer).getReg .x20 = answer.extractLsb' 0 64 from LE.x20,
     show (S45 pk m bits answer).getReg .x21 = answer.extractLsb' 64 64 from LE.x21] at top
-  rw [e1280]
+  rw [e1256]
   constructor
   · intro h
     have hn := congrArg BitVec.toNat h
