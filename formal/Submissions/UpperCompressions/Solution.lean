@@ -1,5 +1,7 @@
-import Submissions.UpperCompressions.WideAvailability
-import Submissions.UpperCompressions.WideSecure
+import Submissions.UpperCompressions.ProofBundle04
+import Submissions.UpperCompressions.ProofBundle13
+
+/- Original module: Submissions.UpperCompressions.Solution; SHA256 abf8100627d21595652936160df4ef44cbc58b906f3f5d47c5eec3e352d40e91. -/
 
 namespace OptimalOTS.Challenge.UpperCompressions
 
@@ -16,3 +18,4 @@ theorem cost : scheme.VerifyCostAtMost 92 :=
   WeightedConstruction.WideWire.cost
 
 end OptimalOTS.Challenge.UpperCompressions
+
