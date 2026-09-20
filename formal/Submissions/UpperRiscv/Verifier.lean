@@ -5,8 +5,8 @@ import Submissions.UpperRiscv.IndexPhase
 # Exact refinement of the machine image
 
 The image observes exactly the certified raw-signature verifier, preserving every oracle query,
-and every run, accepting or rejecting, costs at most `cycleBound = 696` cycles: 71 for the index
-phase, `9 + 2 · nibble` per chain (602 in all, since the nibbles sum to 157), and 23 for the root
+and every run, accepting or rejecting, costs at most `cycleBound = 694` cycles: 71 for the index
+phase, `9 + 2 · nibble` per chain (602 in all, since the nibbles sum to 157), and 21 for the root
 and the decision.
 -/
 
@@ -59,7 +59,7 @@ theorem directVerify_unfold (pk : PublicKey) (m : Message) (bits : List Bool) :
 
 theorem image_code : image.code = verifier := rfl
 
-theorem verifier_length : verifier.length = 1337 := by decide +kernel
+theorem verifier_length : verifier.length = 1338 := by decide +kernel
 
 theorem image_valid : image.Valid := by
   refine ⟨?_, ?_, ?_⟩
@@ -73,7 +73,7 @@ theorem image_valid : image.Valid := by
     exact List.all_eq_true.mp checked
 
 /-- The certified cycle bound on every execution. -/
-def cycleBound : ℕ := 696
+def cycleBound : ℕ := 694
 
 theorem order_eq : order = chainsFrom 0 ++ [rc, rh] := by
   rw [← chainsFrom_zero]
@@ -108,7 +108,7 @@ theorem image_refines (pk : PublicKey) (m : Message) (bits : List Bool) :
   have e : verifier = indexPhase ++ (chains ++ (root ++ decision)) := by
     simp only [verifier, List.append_assoc]
   rw [e] at located
-  rw [directVerify_unfold, show cycleBound = (602 + 23) + 71 from rfl]
+  rw [directVerify_unfold, show cycleBound = (602 + 21) + 71 from rfl]
   apply indexPhase_refines pk m bits (chains ++ (root ++ decision)) 1260 1337
     (fun answer => acceptedTail pk bits answer) _ (by norm_num) located
     (by rw [indexPhase_length])
@@ -132,7 +132,7 @@ theorem image_refines (pk : PublicKey) (m : Message) (bits : List Bool) :
     rw [afterIndex_pc]
     exact h.code_eq (afterIndex_code pk m bits answer)
   rw [← costFrom_zero index]
-  apply chainsFrom_refines index (bits.drop 128) pk (root ++ decision) _ 23 12 ?_ 32 0 rfl
+  apply chainsFrom_refines index (bits.drop 128) pk (root ++ decision) _ 21 10 ?_ 32 0 rfl
     (by norm_num) s (fun _ => 0) left inv located2 (by rw [← blocks_eq, chains_length]; omega)
   intro u y invU locatedU left2 hleft2
   exact rootDecision_refines index (bits.drop 128) pk u y left2 invU locatedU hleft2
