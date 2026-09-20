@@ -125,13 +125,15 @@ def chains : Code := (List.range 32).flatMap chainBlock
 
 /-! ## The root and the decision -/
 
-/-- The root input starts at chain `0`'s slot and has 6080 bits; the answer overwrites it. -/
-def root : Code := [.ADDI .x10 .x12 (imm12 (-744)), .LUI .x11 1, .ADDI .x11 .x11 1984, .ECALL]
+/-- The root input starts at chain `0`'s slot and has 6080 bits; the answer overwrites it. The
+length is `4224 + 1856`, and `x13` still holds the checked signature length. -/
+def root : Code := [.ADDI .x10 .x12 (imm12 (-744)), .ADDI .x11 .x13 1856, .ECALL]
 
-/-- Compare the root answer's low 128 bits with the saved public key and halt. -/
+/-- Compare the root answer's low 128 bits with the saved public key and halt: either mismatching
+word branches to the rejection placed after the accepting HALT. Seven cycles on every path. -/
 def decision : Code :=
-  [.LD .x26 .x12 0, .XOR .x26 .x26 .x30, .LD .x28 .x12 8, .XOR .x28 .x28 .x31,
-   .OR .x26 .x26 .x28, .SLTIU .x10 .x26 1, .ADDI .x5 .x0 0, .ECALL]
+  [.LD .x26 .x12 0, .BNE .x26 .x30 24, .LD .x28 .x12 8, .BNE .x28 .x31 16,
+   .ADDI .x10 .x0 1, .ADDI .x5 .x0 0, .ECALL] ++ reject
 
 def verifier : Code := indexPhase ++ chains ++ root ++ decision
 

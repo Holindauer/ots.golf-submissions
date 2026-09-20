@@ -634,7 +634,8 @@ theorem afterIndex_ctx (hi : Accepted (answer.setWidth 128).toNat) (hlen : bits.
         (by decide) (by decide) (by decide) (by decide) (by decide) (by decide) (by decide)
         (by decide) (by decide) (by decide) (by decide) (by decide)
   refine ⟨?_, afterIndex_payload pk m bits answer, ?_, ?_, ?_, r11,
-    afterIndex_levels pk m bits answer hlen, afterIndex_lanes pk m bits answer hi⟩
+    afterIndex_levels pk m bits answer hlen, afterIndex_lanes pk m bits answer hi,
+    afterIndex_x13 pk m bits answer hlen⟩
   · rw [pre .x9 (Or.inl rfl), P.x9]
   · rw [pre .x30 (Or.inr (Or.inl rfl)), P.x30]
   · rw [pre .x31 (Or.inr (Or.inr (Or.inl rfl))), P.x31]

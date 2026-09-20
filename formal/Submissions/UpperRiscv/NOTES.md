@@ -1,11 +1,11 @@
-# upper-riscv: 696 cycles
+# upper-riscv: 694 cycles
 
 ## Idea
 
 The scored cycle count is
 
 ```
-cycles = 71 (index phase) + Σ_chains (9 + 2·nibble) + 23 (root + decision)
+cycles = 71 (index phase) + Σ_chains (9 + 2·nibble) + 23 (root + decision)   [at 702/696]
        = 94 + 9·C + 2·N + rootCompressions,   C = 32 chains, N = Σ nibbles.
 ```
 
@@ -61,9 +61,29 @@ both monotone the right way, so `Potentials.lean` needed one literal updated and
 Official verifier: `python3 .contract/verifier/verify.py upper-riscv --source .` →
 `verified: track=upper-riscv claim=696` in 248 s.
 
+## Second step: 696 → 694, two instructions out of the root and decision
+
+- **Root length in one instruction.** The root hash needs `x11 = 6080`, previously `LUI x11, 1;
+  ADDI x11, x11, 1984`. On the accepting path `x13` still holds the checked signature length 4224
+  (nothing writes it after the loader, and it doubles as level tag 4), and `6080 − 4224 = 1856`
+  fits a 12-bit immediate, so `ADDI x11, x13, 1856` does it. The chain-phase context `Ctx` only
+  carried the low 16 bits of the tag registers; it now also carries `x13 = 4224` (`Ctx.sigLen`),
+  which `Ctx.frame` preserves for free since `x13` is already a `CtxReg`. No other register is
+  usable: every other fully-known register (`x5 = 1`, `x11 = 192`, `x9`, the broadcast words,
+  the stack top) is more than 2047 away from 6080.
+- **Decision by branches.** `LD; XOR; LD; XOR; OR; SLTIU; ADDI x5; ECALL` (8) becomes
+  `LD x26; BNE x26,x30,+24; LD x28; BNE x28,x31,+16; ADDI x10,x0,1; ADDI x5,x0,0; ECALL`
+  followed by the 3-instruction `reject` stub: 7 cycles accepting, 5 or 7 rejecting. `Refines`
+  bounds cycles from above, so unequal path costs are fine. A trick that folds the verdict into
+  `x5` does *not* work: the HALT syscall traps unless `x5 ∈ {0}` at the final ECALL and
+  `x5 = 1` would issue a HASH, so `x5` must be zeroed explicitly on every path.
+
+Claim `694`: `71 + 602 + 21`. `verifier_length` is 1338 (the reject stub adds three instructions
+and the root loses one). Verified locally with the official verifier.
+
 ## What did not work, and where the remaining fat is
 
-Measured decomposition of the 696 cycles: **382 instruction cycles vs 314 hash cycles** (157 chain
+Measured decomposition of the 694 cycles: **380 instruction cycles vs 314 hash cycles** (157 chain
 hashes + 1 index + 12 root). The instruction overhead dominates. What I costed out:
 
 - **Fewer or longer chains.** Minimising `94 + 9·C + 2·N` over `C` with 4-bit nibbles and
@@ -114,7 +134,8 @@ hashes + 1 index + 12 root). The instruction overhead dominates. What I costed o
 
 ## Next
 
-1. **Drop the per-step level tag: worth 157 cycles (→ ~539), and it is the only big prize left.**
+1. **Drop the per-step level tag: worth 157 cycles (→ ~537). It is the only big prize left, and
+   it is *not* proof surgery.**
    Each chain step is `SH x12, tag, -2` then `ECALL`; the `SH` exists only to put `levVal t` in the
    header's top halfword. Iterating `v ↦ H(hdr_k ‖ v)` with a chain-only tweak is still one-time
    secure — the constant-sum index set already forbids any `n' ≤ n` with `Σn' = Σn` other than `n`
@@ -122,8 +143,12 @@ hashes + 1 index + 12 root). The instruction overhead dominates. What I costed o
    inverts `hdrNat` to recover `(k, t)` from a header, and `hdrNat_injective` is what makes that a
    function. Without level tags a header only identifies the chain, and the level would have to be
    recovered from the value, so the query→node map that `Values/Events/Resample/StageB` are built
-   on has to be restructured (and the `v_t = v_{t+1}` coincidence accounted for). Encouragingly,
-   `hdrNat`/`levVal` appear in only five files and *none* of the security files mention them.
+   on has to be restructured. Worse, the *analysis* has no room for it: `Main.lean` ends at
+   `probTrue ≤ (B − 492)/2^127 < B/2^127`, i.e. the per-query constant is exactly the target.
+   Without level tags a chain-`k` query can hit any of that chain's 15 honest values, so the
+   union bound behind `Spr` loses a factor 15, which is fatal at zero slack. Recovering it needs
+   a genuinely sharper argument (a forgery needs *both* a chain preimage and an index hit, and
+   the current proof charges only one), not a re-plumbing of `decodeHdr`. Budget accordingly.
 2. If that lands, redo the `(C, w, N)` optimisation: with the per-step cost halved the balance
    shifts back toward longer chains, and 5-bit nibbles (`C ≤ 25`) become competitive.
 3. The two-stage reciprocal trick used above is generic: it recovers the `ln 2` that a one-shot

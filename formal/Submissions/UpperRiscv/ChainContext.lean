@@ -36,6 +36,8 @@ structure Ctx (s : MachineState) (index : Idx) (payload : List Bool) (pk : Publi
   levels : ∀ t, t < 15 → (s.getReg (levReg t)).truncate 16 = BitVec.ofNat 16 (Flat.levVal t)
   lanes : ∀ k : Fin 32,
     (s.getHalfword (W (laneAddr k))).toNat = jumpBase k - 8 * (15 - pos index k)
+  /-- The checked signature length, reused by the root phase to build the root input length. -/
+  sigLen : s.getReg .x13 = W 4224
 
 /-- The level-tag registers, the call number, the input length and the payload pointer. -/
 def CtxReg (r : Reg) : Prop :=
@@ -59,7 +61,7 @@ theorem Ctx.frame {s t : MachineState} {index : Idx} {payload : List Bool} {pk :
     Ctx t index payload pk := by
   have hslot : 0x200088 ≤ Flat.slotAddr k ∧ Flat.slotAddr k ≤ 0x200088 + 24 * 31 := by
     unfold Flat.slotAddr Flat.slotBase; omega
-  refine ⟨?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_⟩
+  refine ⟨?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_⟩
   · rw [regs .x9 (Or.inl rfl)]; exact ctx.payloadReg
   · apply memBits_of_word_frame s t _ _ ctx.payloadBits
     intro i hi
@@ -86,6 +88,8 @@ theorem Ctx.frame {s t : MachineState} {index : Idx} {payload : List Bool} {pk :
       omega
     rw [e]
     exact ctx.lanes j
+  · rw [regs .x13 (Or.inr (Or.inr (Or.inr (Or.inr (Or.inr ⟨4, by decide, rfl⟩)))))]
+    exact ctx.sigLen
 
 /-- Chain `k`'s slot represents `v`. -/
 def Holds (s : MachineState) (k : ℕ) {w : ℕ} (v : BitVec w) : Prop := MemBits s (slotW k) v
