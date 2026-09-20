@@ -1,7 +1,7 @@
-# RISC-V upper bound: 694 cycles
+# RISC-V upper bound: 693 cycles
 
 A certified RV64IM verifier for a flat forest one-time signature: every execution, accepting or
-rejecting, terminates within 694 cycles and computes exactly the Lean verifier's oracle
+rejecting, terminates within 693 cycles and computes exactly the Lean verifier's oracle
 computation. `Solution.lean` exports `OptimalOTS.Challenge.UpperRiscv.submission` and
 `certificate` at the claim in `claim.txt`. The rules are on
 [ots.golf/rules](https://ots.golf/rules); the proof guide is
@@ -17,7 +17,7 @@ computation. `Solution.lean` exports `OptimalOTS.Challenge.UpperRiscv.submission
   bits. A chain input is the chain's value above a 64-bit header, the slot address of the chain
   and a level tag (`Constants.lean`); the root input is the 32 chain tops with the headers between
   them, 6080 bits. The three input lengths (192, 6080 and the 384-bit index query) are distinct.
-- **Machine image.** `Program.lean` is a 1338-instruction RV64IM image with a 64-byte data image.
+- **Machine image.** `Program.lean` is a 1337-instruction RV64IM image with a 72-byte data image.
   The index phase hashes `nonce ‖ message` in place, builds eight lane words holding
   `8 · nibble` in 16-bit lanes, checks the nibble sum with one multiplication, and stores a jump
   target for every chain. A chain block copies the disclosed word into its slot, writes the
@@ -29,7 +29,7 @@ computation. `Solution.lean` exports `OptimalOTS.Challenge.UpperRiscv.submission
   fresh index is accepted with probability at least `729 / 2 ^ 23` and the `2 ^ 20` signing trials
   fail with probability at most `2 ^ -128` (`Valid.lean`, `Availability.lean`). 157 is the smallest
   admissible target: at 156 the `2 ^ 20` trials fail with probability about `2 ^ -119`.
-- **Cycle count.** One cycle per executed instruction and twelve for the 6080-bit root hash: 71
+- **Cycle count.** One cycle per executed instruction and twelve for the 6080-bit root hash: 70
   for the index phase, `9 + 2 · nibble` per chain (602 in all), and 21 for the root and the
   decision (2 + 12 + 7, on every path).
 
@@ -44,7 +44,7 @@ computation. `Solution.lean` exports `OptimalOTS.Challenge.UpperRiscv.submission
 | `Lanes.lean`, `IndexLanes.lean`, `IndexArith.lean`, `IndexPhase.lean` | the index query, the lane arithmetic and the rejections |
 | `ChainContext.lean`, `ChainPrologue.lean`, `ChainSteps.lean`, `ChainBlock.lean`, `ChainPhase.lean` | the chain blocks and their cost |
 | `RootPhase.lean` | the root hash and the decision |
-| `Verifier.lean` | `image_refines`: the image equals the certified verifier on every input, within 694 cycles |
+| `Verifier.lean` | `image_refines`: the image equals the certified verifier on every input, within 693 cycles |
 | `Refines.lean`, `BlockExecution.lean`, `MachineFacts.lean`, `MachineMemory.lean`, `LoaderProof.lean`, `CopyProof.lean`, `HashOutput.lean` | machine semantics, memory and reusable execution rules |
 | `Candidate.lean` | `machineCertificate`, bundling the OTS and machine proofs |
 | `Solution.lean` | the exported declarations |
