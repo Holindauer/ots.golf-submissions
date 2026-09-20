@@ -43,8 +43,8 @@ def indexPrefix : Code :=
   [.ADDI .x9 .x12 16, .LD .x30 .x10 0, .LD .x31 .x10 8] ++ copy128 .x12 0 .x10 0 ++
   [.ADDI .x11 .x0 384, .LUI .x12 0x200, .ADDI .x5 .x0 1]
 
-/-- Reject unless the signature has exactly 4224 bits. -/
-def lengthCheck : Code := [.LUI .x6 1, .ADDI .x6 .x6 128, .BEQ .x13 .x6 16] ++ reject
+/-- Reject unless the signature has exactly 4224 bits; the constant is a word of the data image. -/
+def lengthCheck : Code := [.LD .x6 .x12 (BitVec.ofNat 12 64), .BEQ .x13 .x6 16] ++ reject
 
 /-- Load the index words and the four lane constants. -/
 def loadWords : Code :=
@@ -92,7 +92,7 @@ def chainStep (t : ℕ) : Code := [.SH .x12 (levReg t) (BitVec.ofNat 12 4094), .
 def chainTable : Code := (List.range 15).flatMap chainStep
 
 /-- Number of instructions before chain `0`. -/
-def indexLength : ℕ := 77
+def indexLength : ℕ := 76
 
 /-- Number of instructions of a chain block. -/
 def blockLength : ℕ := 39
@@ -146,10 +146,10 @@ def broadcast (v : ℕ) : ℕ := v + v * 2 ^ 16 + v * 2 ^ 32 + v * 2 ^ 48
 def wordBytes (v : ℕ) : List (BitVec 8) := (List.range 8).map fun j => BitVec.ofNat 8 (v / 2 ^ (8 * j))
 
 /-- The data image: 32 zero bytes (the index answer), then `0x78`, `1` and the two jump bases,
-broadcast. -/
+broadcast, then the signature length 4224. -/
 def dataImage : List (BitVec 8) :=
   List.replicate 32 0 ++ wordBytes (broadcast 0x78) ++ wordBytes (broadcast 1) ++
-    wordBytes (broadcast Flat.jumpBase0) ++ wordBytes (broadcast Flat.jumpBase1)
+    wordBytes (broadcast Flat.jumpBase0) ++ wordBytes (broadcast Flat.jumpBase1) ++ wordBytes 4224
 
 def image : Riscv.Image := ⟨verifier, dataImage⟩
 

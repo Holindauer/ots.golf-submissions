@@ -1,4 +1,4 @@
-# upper-riscv: 694 cycles
+# upper-riscv: 693 cycles
 
 ## Idea
 
@@ -81,9 +81,22 @@ Official verifier: `python3 .contract/verifier/verify.py upper-riscv --source .`
 Claim `694`: `71 + 602 + 21`. `verifier_length` is 1338 (the reject stub adds three instructions
 and the root loses one). Verified locally with the official verifier.
 
+## Third step: 694 → 693, the length check reads its constant
+
+`lengthCheck` materialised 4224 with `LUI x6, 1; ADDI x6, x6, 128` before the `BEQ`. `x12` is
+already `dataBase` there, so the constant becomes the ninth word of the data image (72 bytes now)
+and one `LD x6, x12, 64` loads it. The lane words are stored at `dataBase + 64 …` *after* the
+check, so the slot is free at the moment it is read; `S2_len` carries the word through the prefix
+and the index hash. `indexLength` drops to 76, which shifts every chain table by 4 bytes; the
+`JALR` immediates `tableEnd k − jumpBase k` move from `±1170` to `−1174 … 1166`, still inside
+12 bits, so both jump bases (and the level tags they double as) are unchanged. The index phase is
+now 70 cycles: prefix 10, hash 1, length 2, loads 6, lanes 39, sum 4, level tags 8.
+
+Claim `693`: `70 + 602 + 21`, `verifier_length` 1337. Verified locally with the official verifier.
+
 ## What did not work, and where the remaining fat is
 
-Measured decomposition of the 694 cycles: **380 instruction cycles vs 314 hash cycles** (157 chain
+Measured decomposition of the 693 cycles: **379 instruction cycles vs 314 hash cycles** (157 chain
 hashes + 1 index + 12 root). The instruction overhead dominates. What I costed out:
 
 - **Fewer or longer chains.** Minimising `94 + 9·C + 2·N` over `C` with 4-bit nibbles and
@@ -127,10 +140,7 @@ hashes + 1 index + 12 root). The instruction overhead dominates. What I costed o
   signed and `tableEnd k` is ~4400 + 156k, so the base must ride in the loaded value. Adding the
   base back costs exactly the instruction the trick saved.
 
-- **`lengthCheck` (3 cycles) can become 2** by keeping 4224 in the data image and loading it with
-  one `LD` (`x12` is already `dataBase` there). It is one cycle, and it shifts `indexLength`
-  77 → 76, hence every `tableEnd k`, hence both `jumpBase` constants — which are *also* level tags
-  in `levList` and words in `dataImage` — plus `verifier_length` and the fuel. Not worth the ripple.
+- **`lengthCheck`** — taken, see the third step above. (The jump bases did not need to move.)
 
 ## Next
 
@@ -149,8 +159,24 @@ hashes + 1 index + 12 root). The instruction overhead dominates. What I costed o
    union bound behind `Spr` loses a factor 15, which is fatal at zero slack. Recovering it needs
    a genuinely sharper argument (a forgery needs *both* a chain preimage and an index hit, and
    the current proof charges only one), not a re-plumbing of `decodeHdr`. Budget accordingly.
-2. If that lands, redo the `(C, w, N)` optimisation: with the per-step cost halved the balance
-   shifts back toward longer chains, and 5-bit nibbles (`C ≤ 25`) become competitive.
+   Where the sharpening would live: the proof is a potential argument (`Potentials.lean`,
+   `DESIGN.md`): `ΦA`/`ΦB` grow by at most `κ = 2ε` per compression, with the index queries
+   handled by the row potential `psi` of `RowPotential.lean` and the chain second-preimage event
+   `Spr` charged inside `ΦB`. The observation that makes a sharper bound plausible: a second
+   preimage at any level *other than the disclosed one* only yields a forgery on a *different*
+   index, which the row potential already charges; only the disclosed level gives a same-index
+   (strong) forgery for free. So `Spr` could be split by level and 14 of its 15 targets folded
+   into the index accounting. That is a re-derivation of `ΦB_charge`, not a local edit.
+2. **Wide chain states, quantified.** The other way around the 128-bit target is to hash the
+   whole previous answer: with a 192- or 256-bit state, `x10 = x12`, the output overwrites the
+   state exactly, a step is one cycle and no tag is written; `Spr`'s targets become ≥ 192-bit
+   values, so the union over levels costs nothing. But the disclosure per chain grows to the
+   state width, which caps the chain count: 192-bit states need 5-bit nibbles and `C = 25`
+   (`N = 284`), 256-bit states 6-bit nibbles and `C = 21` (`N = 469`). Costing the same
+   prologue/lanes/root model gives roughly **~620 cycles for 192-bit states** and ~810 for 256-bit
+   — a real gain, but ~70 cycles, not 157, because longer chains eat most of the saving. It is a
+   full scheme, security-proof and machine-proof redesign (`Fin 32`/`Fin 15` and the header
+   nodes run through `Names/Values/Events/Resample/StageB`).
 3. The two-stage reciprocal trick used above is generic: it recovers the `ln 2` that a one-shot
    `(1-p)^k ≤ 1/(1+kp)` throws away, without leaving ℚ. Anyone tightening an availability bound in
    this competition probably wants it.
