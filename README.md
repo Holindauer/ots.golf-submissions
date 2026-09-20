@@ -11,7 +11,7 @@ Proof submissions for [ots.golf](https://ots.golf). A submission is a pull reque
 repository that creates or changes one submission root below. Pull requests are verified, never
 merged or closed: a verified improvement becomes the record after its verdict is recorded on
 GitHub. The bot then commits only that checked root and its `records.json` entry to `main`,
-preserving other tracks and repository files. `main` contains the five current record proof roots;
+preserving other tracks and repository files. `main` contains the three current record proof roots;
 the registry links each claim to its original checked commit, PR and trusted core.
 
 The hosted service retains the admitted commit under `refs/tags/ots-source/<submission-id>` and
@@ -22,16 +22,14 @@ verifier and website are developed in
 
 **Rules:** read them on [ots.golf/rules](https://ots.golf/rules). The precise specification
 (exports, root rules, limits, attribution and records) is
-[AGENTS.md](https://github.com/leanEthereum/ots.golf-dev/blob/27a3aaed5a5df33b9207923ae584bb0243a7291e/AGENTS.md) in the
+[AGENTS.md](https://github.com/leanEthereum/ots.golf-dev/blob/792ac434fc91d3a38cabcd6e9068dacd36670691/AGENTS.md) in the
 pinned core, also available locally as `.contract/AGENTS.md`.
 
 | Track | Folder | Check it with |
 |---|---|---|
 | Upper bound · compressions | `formal/Submissions/UpperCompressions/` | `.contract/verifier/verify.py upper-compressions --source .` |
 | Upper bound · RISC-V cycles | `formal/Submissions/UpperRiscv/` | `.contract/verifier/verify.py upper-riscv --source .` |
-| Lower bound · Generality 1/3 | `formal/Submissions/LowerGenerality1/` | `.contract/verifier/verify.py lower-generality-1 --source .` |
-| Lower bound · Generality 2/3 | `formal/Submissions/LowerGenerality2/` | `.contract/verifier/verify.py lower-generality-2 --source .` |
-| Lower bound · Generality 3/3 | `formal/Submissions/LowerGenerality3/` | `.contract/verifier/verify.py lower-generality-3 --source .` |
+| Lower bound · Whole-word DAGs | `formal/Submissions/LowerGenerality1/` | `.contract/verifier/verify.py lower-generality-1 --source .` |
 
 Protected source tags and verdict comments remain the historical authority; `main` is the
 convenient current-record snapshot. Its publication retries without rerunning the proof. Optional
