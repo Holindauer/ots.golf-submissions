@@ -9,6 +9,20 @@
       "id": "5d998c7010b4ac6f6de99ed0024e39f5",
       "pr_number": 12,
       "pr_url": "https://github.com/leanEthereum/ots.golf-submissions/pull/12",
+      "record_origin": {
+        "assisted_by": "GPT-6 (submission packaging)",
+        "author": {
+          "avatar_url": "https://avatars.githubusercontent.com/u/101908066?v=4",
+          "id": 101908066,
+          "login": "TomWambsgans"
+        },
+        "co_authors": [],
+        "commit": "a4cec3eb0b10b6fbd2bee3eca8e74094d631d67a",
+        "contract": "a78ef575231822314169929fa49a707d7788cebf57669c5ef3af9dde947d25cb",
+        "finished_at": "2026-09-19T22:55:00.940708Z",
+        "id": "54b84501dae563c243b146f31600e291",
+        "pr_url": "https://github.com/leanEthereum/ots.golf-submissions/pull/1"
+      },
       "source_archive": {
         "commit": "0b6f72c84b96be2869aa631010f6905e9b768589",
         "contract": "133f49c9ceaf596c3bf6aaf0941ffe126a1efe23db0785c8af1288b149cb093e",
@@ -35,6 +49,20 @@
       "id": "c3742f97497a31903e1299b4080bd59b",
       "pr_number": 13,
       "pr_url": "https://github.com/leanEthereum/ots.golf-submissions/pull/13",
+      "record_origin": {
+        "assisted_by": "Codex",
+        "author": {
+          "avatar_url": "https://avatars.githubusercontent.com/u/271341843?v=4",
+          "id": 271341843,
+          "login": "saucegodbased"
+        },
+        "co_authors": [],
+        "commit": "7be6d31b9de82713e5b088f17e62e30a9198a734",
+        "contract": "a78ef575231822314169929fa49a707d7788cebf57669c5ef3af9dde947d25cb",
+        "finished_at": "2026-09-20T05:52:56.691239Z",
+        "id": "4abfb06a48549d67349e07c50b4dc5ca",
+        "pr_url": "https://github.com/leanEthereum/ots.golf-submissions/pull/8"
+      },
       "source_archive": {
         "commit": "8183721cb8e83b6bfbd7ef97337596c79e1be6d9",
         "contract": "133f49c9ceaf596c3bf6aaf0941ffe126a1efe23db0785c8af1288b149cb093e",
@@ -61,6 +89,20 @@
       "id": "b7855667e4f3fc9164ff0f34982436e4",
       "pr_number": 14,
       "pr_url": "https://github.com/leanEthereum/ots.golf-submissions/pull/14",
+      "record_origin": {
+        "assisted_by": "Claude Fable 5.1",
+        "author": {
+          "avatar_url": "https://avatars.githubusercontent.com/u/34778974?v=4",
+          "id": 34778974,
+          "login": "scaraven"
+        },
+        "co_authors": [],
+        "commit": "e9bc82671c259152d5a9c1c47fed9c4175e75e8f",
+        "contract": "a78ef575231822314169929fa49a707d7788cebf57669c5ef3af9dde947d25cb",
+        "finished_at": "2026-09-20T13:45:18.356049Z",
+        "id": "40030e6f1ab38bfad05a86bf4e5258cf",
+        "pr_url": "https://github.com/leanEthereum/ots.golf-submissions/pull/11"
+      },
       "source_archive": {
         "commit": "26d90cf4f38f47a699c9245786047f5c2783c648",
         "contract": "133f49c9ceaf596c3bf6aaf0941ffe126a1efe23db0785c8af1288b149cb093e",

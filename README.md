@@ -12,7 +12,10 @@ repository that creates or changes one submission root below. Pull requests are 
 merged or closed: a verified improvement becomes the record after its verdict is recorded on
 GitHub. The bot then commits only that checked root and its `records.json` entry to `main`,
 preserving other tracks and repository files. `main` contains the three current record proof roots;
-the registry links each claim to its original checked commit, PR and trusted core.
+the registry links each claim to its checked commit, PR and trusted core. When a maintainer
+ports an existing proof to updated rules, `record_origin` preserves the original record holder,
+submission and date; the certificate fields identify the adapted checked source. A proof port
+does not transfer credit or set a new record.
 
 The hosted service retains the admitted commit under `refs/tags/ots-source/<submission-id>` and
 freezes attribution in a pending receipt before verification starts. The submission page's **Code**
@@ -22,7 +25,7 @@ verifier and website are developed in
 
 **Rules:** read them on [ots.golf/rules](https://ots.golf/rules). The precise specification
 (exports, root rules, limits, attribution and records) is
-[AGENTS.md](https://github.com/leanEthereum/ots.golf-dev/blob/fb1dc551a876c1dc46ffe70dfae5c150557006d8/AGENTS.md) in the
+[AGENTS.md](https://github.com/leanEthereum/ots.golf-dev/blob/9b6b1c4229cb4a9c61f8acef79a4c51556c7988e/AGENTS.md) in the
 pinned core, also available locally as `.contract/AGENTS.md`.
 
 | Track | Folder | Check it with |
@@ -56,11 +59,11 @@ in a proof PR. A PR based on an older `main` remains eligible: later base-branch
 not count as changes made by that PR. Each root must remain self-contained under the import rules.
 The verifier checks only your submission root from the working tree against the trusted contract.
 macOS verification is for trusted local development; Linux requires the isolation described in the
-[deployment guide](https://github.com/leanEthereum/ots.golf-dev/blob/fb1dc551a876c1dc46ffe70dfae5c150557006d8/service/deploy/README.md).
+[deployment guide](https://github.com/leanEthereum/ots.golf-dev/blob/9b6b1c4229cb4a9c61f8acef79a4c51556c7988e/service/deploy/README.md).
 
 ## Contract pin
 
-`.contract` is a Git submodule of the core repository, pinned to commit `fb1dc551a876c1dc46ffe70dfae5c150557006d8`
+`.contract` is a Git submodule of the core repository, pinned to commit `9b6b1c4229cb4a9c61f8acef79a4c51556c7988e`
 (contract ID `133f49c9ceaf596c3bf6aaf0941ffe126a1efe23db0785c8af1288b149cb093e`). Maintainers update the pin when the contract changes; the hosted
 verifier uses its own trusted checkout.
 
