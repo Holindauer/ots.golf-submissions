@@ -5,9 +5,9 @@ import Submissions.UpperRiscv.Count
 # Accepted indices
 
 An index is the 128-bit prefix of the hash of message and nonce. It is accepted when its 32
-nibbles sum to `target = 160`; every nibble value is allowed. The accepted indices are counted
-exactly by `comp 32 160`, and there are more than `2 ^ 115` of them, so the signing loop of the
-paper scheme succeeds with the same probability as before.
+nibbles sum to `target = 157`; every nibble value is allowed. The accepted indices are counted
+exactly by `comp 32 157`. There are more than `729 * 2 ^ 105` of them, which is the exact
+threshold at which the signing loop still fails with probability at most `2 ^ -128`.
 -/
 
 namespace OptimalOTS
@@ -16,7 +16,7 @@ open OptimalOTS.Dag
 
 
 /-- The digit sum of every accepted index. -/
-def target : ℕ := 160
+def target : ℕ := 157
 
 /-- Nibble `k` of `i`. -/
 def nibble (i k : ℕ) : ℕ := i / 16 ^ k % 16
@@ -170,12 +170,18 @@ theorem card_validSet : (validSet).card = Forest.comp 32 target := by
     show nibble (indexOf c) k = (c k).val
     rw [nibble_indexOf]
 
-theorem comp_32_target : Forest.comp 32 target = 44383521204130784290044027201113527 := by
-  show Forest.comp 32 160 = _
-  rw [← Forest.compTable_getD 160 32 160 le_rfl]
+theorem comp_32_target : Forest.comp 32 target = 30465700825049557482282408820464096 := by
+  show Forest.comp 32 157 = _
+  rw [← Forest.compTable_getD 157 32 157 le_rfl]
   decide +kernel
 
-theorem numValid_ge : 2 ^ 115 ≤ numValid := by
+theorem numValid_ge : 2 ^ 114 ≤ numValid := by
+  rw [numValid, card_validSet, comp_32_target]
+  norm_num
+
+/-- The availability threshold: a fresh index is accepted with probability at least
+`729 / 2 ^ 23`, which is what the `2 ^ 20` signing trials need. -/
+theorem numValid_avail : 729 * 2 ^ 105 ≤ numValid := by
   rw [numValid, card_validSet, comp_32_target]
   norm_num
 

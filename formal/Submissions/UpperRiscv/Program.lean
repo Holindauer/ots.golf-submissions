@@ -11,7 +11,7 @@ Straight-line code except for two rejection branches and one computed jump per c
    signature of other than 4224 bits.
 2. **Lanes.** From the two index words, build eight lane words: 16-bit lanes holding
    `8 · nibble`. Their sum, multiplied by `0x0001000100010001`, carries `8 · Σ nibbles` in its top
-   lane; reject unless the nibbles sum to `target = 160`. Store `jumpBase - 8 · nibble` for every
+   lane; reject unless the nibbles sum to `target = 157`. Store `jumpBase - 8 · nibble` for every
    chain.
 3. **Chains.** Chain `k`'s slot holds its value at `Flat.slotAddr k`, after an 8-byte header.
    The block copies the disclosed word into the slot, writes the slot address as the header,
@@ -64,9 +64,9 @@ def laneWord (w i : ℕ) : Code :=
 
 def lanes : Code := (List.range 8).flatMap fun j => laneWord (j / 4) (j % 4)
 
-/-- Reject unless the nibbles sum to 160: the top lane of `sum * 0x0001000100010001` is `8 · Σ`. -/
+/-- Reject unless the nibbles sum to 157: the top lane of `sum * 0x0001000100010001` is `8 · Σ`. -/
 def sumCheck : Code :=
-  [.MUL .x27 .x27 .x23, .SRLI .x27 .x27 48, .XORI .x27 .x27 1280, .BEQ .x27 .x0 16] ++ reject
+  [.MUL .x27 .x27 .x23, .SRLI .x27 .x27 48, .XORI .x27 .x27 1256, .BEQ .x27 .x0 16] ++ reject
 
 /-- The level tags not already held by a register, and the chain input length. -/
 def levelSetup : Code :=

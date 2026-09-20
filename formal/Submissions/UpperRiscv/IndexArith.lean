@@ -149,7 +149,7 @@ theorem index_nibbleSum (answer : BitVec hashBits) :
 
 theorem accepted_iff_wordSum (answer : BitVec hashBits) :
     Accepted (answer.setWidth 128).toNat ↔
-      wordNibbleSum (answer.extractLsb' 0 64).toNat (answer.extractLsb' 64 64).toNat = 160 := by
+      wordNibbleSum (answer.extractLsb' 0 64).toNat (answer.extractLsb' 64 64).toNat = 157 := by
   unfold Accepted
   rw [index_nibbleSum]
   rfl

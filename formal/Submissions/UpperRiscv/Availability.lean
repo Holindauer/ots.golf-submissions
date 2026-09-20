@@ -7,7 +7,7 @@ import Submissions.UpperRiscv.Adapter
 
 Key generation makes no 512-bit index query. For any message chosen from the public key,
 the signer therefore tries fresh, distinct nonce queries. Each trial fails with probability
-`miss = 1 - numValid / 2 ^ 128 ≤ 8191 / 8192`, and the `2^20` trials give failure at most
+`miss = 1 - numValid / 2 ^ 128 ≤ 8387879 / 8388608`, and the `2^20` trials give failure at most
 `2^-128`.
 -/
 
@@ -29,18 +29,18 @@ def miss : ℝ≥0∞ :=
 theorem miss_eq : miss = ((2 ^ 256 - numValid * 2 ^ 128 : ℕ) : ℝ≥0∞) / 2 ^ 256 := by
   rw [miss, div_eq_mul_inv, Nat.cast_pow, Nat.cast_ofNat]
 
-/-- At least `2 ^ 115` of the `2 ^ 128` indices are accepted. -/
-theorem miss_le : miss ≤ 8191 / 8192 := by
-  have hN : 2 ^ 243 ≤ numValid * 2 ^ 128 :=
-    calc 2 ^ 243 = 2 ^ 115 * 2 ^ 128 := by norm_num
-      _ ≤ _ := Nat.mul_le_mul_right _ numValid_ge
-  have ha : 2 ^ 256 - numValid * 2 ^ 128 ≤ 8191 * 2 ^ 243 := by
+/-- At least `729 * 2 ^ 105` of the `2 ^ 128` indices are accepted. -/
+theorem miss_le : miss ≤ 8387879 / 8388608 := by
+  have hN : 729 * 2 ^ 233 ≤ numValid * 2 ^ 128 :=
+    calc 729 * 2 ^ 233 = (729 * 2 ^ 105) * 2 ^ 128 := by norm_num
+      _ ≤ _ := Nat.mul_le_mul_right _ numValid_avail
+  have ha : 2 ^ 256 - numValid * 2 ^ 128 ≤ 8387879 * 2 ^ 233 := by
     have h := Nat.sub_le_sub_left hN (2 ^ 256)
-    have e : 2 ^ 256 - 2 ^ 243 = 8191 * 2 ^ 243 := by norm_num
+    have e : 2 ^ 256 - 729 * 2 ^ 233 = 8387879 * 2 ^ 233 := by norm_num
     omega
   calc miss = ((2 ^ 256 - numValid * 2 ^ 128 : ℕ) : ℝ≥0∞) / 2 ^ 256 := miss_eq
-    _ ≤ ((8191 * 2 ^ 243 : ℕ) : ℝ≥0∞) / 2 ^ 256 := ENNReal.div_le_div_right (Nat.cast_le.mpr ha) _
-    _ = 8191 / 8192 := by
+    _ ≤ ((8387879 * 2 ^ 233 : ℕ) : ℝ≥0∞) / 2 ^ 256 := ENNReal.div_le_div_right (Nat.cast_le.mpr ha) _
+    _ = 8387879 / 8388608 := by
       rw [ENNReal.div_eq_div_iff (by norm_num) (by finiteness) (by norm_num) (by finiteness)]
       norm_num
 
@@ -160,16 +160,28 @@ private theorem bernoulli_reciprocal {p : ℝ} (hp : 0 ≤ p) (hp1 : p ≤ 1) (k
   rw [le_div_iff₀ hd]
   simpa only [mul_comm] using hprod k
 
-/-- A block of 8192 trials fails with probability at most one half. -/
+/-- A block of 8192 trials fails with probability at most one half.
+
+The reciprocal bound alone is too weak here: applied to the whole block it only yields
+`1 / (1 + 8192 * 729 / 2 ^ 23)`, which exceeds one half. Applying it to 128 trials and then
+raising to the 64th power keeps the compounding, and `(8481920 / 8388608) ^ 64 > 2`. -/
 private theorem miss_block : miss ^ 8192 ≤ 1 / 2 := by
   refine (pow_le_pow_left' miss_le 8192).trans ?_
-  have h := bernoulli_reciprocal (p := (1 : ℝ) / 8192) (by norm_num) (by norm_num) 8192
-  have hbase : (1 : ℝ) - 1 / 8192 = 8191 / 8192 := by norm_num
-  have hden : 1 + ((8192 : ℕ) : ℝ) * (1 / 8192) = 2 := by norm_num
-  rw [hbase, hden] at h
+  have h128 := bernoulli_reciprocal (p := (729 : ℝ) / 8388608) (by norm_num) (by norm_num) 128
+  have hbase : (1 : ℝ) - 729 / 8388608 = 8387879 / 8388608 := by norm_num
+  have hden : 1 + ((128 : ℕ) : ℝ) * (729 / 8388608) = 8481920 / 8388608 := by norm_num
+  rw [hbase, hden, one_div_div] at h128
+  have hnn : (0 : ℝ) ≤ ((8387879 : ℝ) / 8388608) ^ 128 := by positivity
+  have h : ((8387879 : ℝ) / 8388608) ^ 8192 ≤ 1 / 2 := by
+    calc ((8387879 : ℝ) / 8388608) ^ 8192
+        = (((8387879 : ℝ) / 8388608) ^ 128) ^ 64 := by rw [← pow_mul]
+      _ ≤ ((8388608 : ℝ) / 8481920) ^ 64 := pow_le_pow_left₀ hnn h128 64
+      _ ≤ 1 / 2 := by
+          rw [div_pow, div_le_iff₀ (by positivity)]
+          norm_num
   have h' := ENNReal.ofReal_le_ofReal h
   rw [ENNReal.ofReal_pow (by norm_num)] at h'
-  have hb : ENNReal.ofReal ((8191 : ℝ) / 8192) = (8191 / 8192 : ℝ≥0∞) := by
+  have hb : ENNReal.ofReal ((8387879 : ℝ) / 8388608) = (8387879 / 8388608 : ℝ≥0∞) := by
     norm_num [ENNReal.ofReal_div_of_pos]
   have hh : ENNReal.ofReal ((1 : ℝ) / 2) = (1 / 2 : ℝ≥0∞) := by
     norm_num [ENNReal.ofReal_div_of_pos]

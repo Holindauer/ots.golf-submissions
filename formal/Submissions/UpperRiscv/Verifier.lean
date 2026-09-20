@@ -5,8 +5,8 @@ import Submissions.UpperRiscv.IndexPhase
 # Exact refinement of the machine image
 
 The image observes exactly the certified raw-signature verifier, preserving every oracle query,
-and every run, accepting or rejecting, costs at most `cycleBound = 702` cycles: 71 for the index
-phase, `9 + 2 · nibble` per chain (608 in all, since the nibbles sum to 160), and 23 for the root
+and every run, accepting or rejecting, costs at most `cycleBound = 696` cycles: 71 for the index
+phase, `9 + 2 · nibble` per chain (602 in all, since the nibbles sum to 157), and 23 for the root
 and the decision.
 -/
 
@@ -73,7 +73,7 @@ theorem image_valid : image.Valid := by
     exact List.all_eq_true.mp checked
 
 /-- The certified cycle bound on every execution. -/
-def cycleBound : ℕ := 702
+def cycleBound : ℕ := 696
 
 theorem order_eq : order = chainsFrom 0 ++ [rc, rh] := by
   rw [← chainsFrom_zero]
@@ -108,7 +108,7 @@ theorem image_refines (pk : PublicKey) (m : Message) (bits : List Bool) :
   have e : verifier = indexPhase ++ (chains ++ (root ++ decision)) := by
     simp only [verifier, List.append_assoc]
   rw [e] at located
-  rw [directVerify_unfold, show cycleBound = (608 + 23) + 71 from rfl]
+  rw [directVerify_unfold, show cycleBound = (602 + 23) + 71 from rfl]
   apply indexPhase_refines pk m bits (chains ++ (root ++ decision)) 1260 1337
     (fun answer => acceptedTail pk bits answer) _ (by norm_num) located
     (by rw [indexPhase_length])

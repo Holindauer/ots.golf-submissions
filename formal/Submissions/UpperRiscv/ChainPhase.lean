@@ -5,7 +5,7 @@ import Submissions.UpperRiscv.ChainBlock
 
 The 32 chain blocks run one after the other, in the specification's chain-major node order.
 After chain `k`, the tops of chains `0 … k` with the headers between them form the prefix of the
-root input in memory. The phase costs `9 + 2 · nibble` cycles per chain, `608` in all.
+root input in memory. The phase costs `9 + 2 · nibble` cycles per chain, `602` in all.
 -/
 
 namespace OptimalOTS.RiscvUpperProgram
@@ -212,8 +212,8 @@ theorem costFrom_eq : ∀ (n k : ℕ), 32 - k = n → costFrom index k =
       have hne : k'.val ≠ k := fun h => he (Fin.ext h)
       split_ifs <;> omega
 
-/-- The 32 prologues and 160 hash steps cost 608 cycles on every accepted index. -/
-theorem costFrom_zero : costFrom index 0 = 608 := by
+/-- The 32 prologues and 157 hash steps cost 602 cycles on every accepted index. -/
+theorem costFrom_zero : costFrom index 0 = 602 := by
   rw [costFrom_eq index 32 0 rfl]
   simp only [Nat.zero_le, if_true]
   rw [Finset.sum_add_distrib, Finset.sum_const, ← Finset.mul_sum, smul_eq_mul]

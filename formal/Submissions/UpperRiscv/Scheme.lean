@@ -5,7 +5,7 @@ import Submissions.UpperRiscv.GScheme
 # The flat nibble-layout forest
 
 A family of cuts indexed by the accepted indices, with 32 revealed 128-bit values. Verification
-costs 173 compressions.
+costs 170 compressions.
 -/
 
 open OracleSpec OracleComp ENNReal
@@ -55,12 +55,12 @@ def forestScheme : GScheme where
 theorem isCut_setsName (i : Idx) : IsCut (setsName i) :=
   fixedCut_isCut i
 
-theorem cost_setsName (i : Idx) : ∑ n ∈ evaluatedSet (setsName i), n.cost = 172 :=
+theorem cost_setsName (i : Idx) : ∑ n ∈ evaluatedSet (setsName i), n.cost = 169 :=
   fixedCut_cost i
 
-/-- Every signature verifies in `173` compressions. -/
-theorem forestScheme_verifyCost (i : Idx) : forestScheme.verifyCost i = 173 := by
-  show idxCost + graph.reconstructCost (fins (setsName i)) = 173
+/-- Every signature verifies in `170` compressions. -/
+theorem forestScheme_verifyCost (i : Idx) : forestScheme.verifyCost i = 170 := by
+  show idxCost + graph.reconstructCost (fins (setsName i)) = 170
   have hidx : idxCost = 1 := by decide
   rw [reconstructCost_eq, hidx]
   have h := cost_setsName i
