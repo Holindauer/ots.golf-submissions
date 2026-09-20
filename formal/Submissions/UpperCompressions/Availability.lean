@@ -1,208 +1,81 @@
-import Submissions.UpperCompressions.Assembly
-import Submissions.UpperCompressions.Scheme
-import Submissions.UpperCompressions.Adapter
+import Mathlib
+namespace WeightedAvailability
+attribute [local irreducible] Nat.choose
 
-/-!
-# Signing availability of the forest algorithm
+lemma quartic_binomial_lower (x : ℝ) (hx : 0 ≤ x) (n : ℕ) (hn : 4 ≤ n) :
+    1 + (n:ℝ)*x + (n.choose 2:ℝ)*x^2 + (n.choose 3:ℝ)*x^3 +
+      (n.choose 4:ℝ)*x^4 ≤ (1+x)^n := by
+  have hs : Finset.range 5 ⊆ Finset.range (n+1) := Finset.range_mono (by omega)
+  have h := Finset.sum_le_sum_of_subset_of_nonneg (f := fun i =>
+    x^i*(1:ℝ)^(n-i)*(n.choose i:ℝ)) hs (by intro i hi hni; positivity)
+  rw [← add_pow] at h
+  simp only [Finset.sum_range_succ, Finset.sum_range_zero, pow_zero, one_pow,
+    mul_one, Nat.choose_zero_right, Nat.choose_one_right, Nat.cast_one,
+    zero_add, pow_one] at h
+  simpa only [add_comm, add_left_comm, add_assoc, mul_comm] using h
 
-Key generation makes no 512-bit index query. For any message chosen from the public key,
-the signer therefore tries fresh, distinct nonce queries. Each trial fails with probability
-`8191 / 8192`. The `2^21` trials give failure at most `2^-256`, below the required `2^-128`.
--/
+lemma linear_binomial_lower (x : ℝ) (hx : 0 ≤ x) (n : ℕ) (hn : 1 ≤ n) :
+    1+(n:ℝ)*x ≤ (1+x)^n := by
+  have hs : Finset.range 2 ⊆ Finset.range (n+1) := Finset.range_mono (by omega)
+  have h := Finset.sum_le_sum_of_subset_of_nonneg (f := fun i =>
+    x^i*(1:ℝ)^(n-i)*(n.choose i:ℝ)) hs (by intro i hi hni; positivity)
+  rw [← add_pow] at h
+  simp only [Finset.sum_range_succ, Finset.sum_range_zero, pow_zero, one_pow,
+    mul_one, Nat.choose_zero_right, Nat.choose_one_right, Nat.cast_one,
+    zero_add, pow_one] at h
+  simpa only [add_comm, mul_comm] using h
 
-open OracleSpec OracleComp OracleComp.EvalDist ENNReal
-noncomputable section
-open scoped Classical
-
-namespace OptimalOTS.Forest.Availability
-
-open OptimalOTS.Dag
-
-
-attribute [local irreducible] Finset.univ Finset.filter
-
-/-- Failure probability of one fresh index query. -/
-def miss : ℝ≥0∞ := 8191 / 8192
-
-attribute [local irreducible] hashBits blockBits pkBits msgBits securityBits maxSignatureBits keygenBudget signBudget nonceBits idxBits numCuts trials
-
-/-- Stated for any width, so that the kernel never enumerates the 256-bit strings. -/
-private theorem card_filter_not_bitVec {n k : ℕ} (p : BitVec n → Prop) [DecidablePred p]
-    (hv : (Finset.univ.filter p).card = k) :
-    (Finset.univ.filter fun w => ¬ p w).card = 2 ^ n - k := by
-  have h := Finset.card_filter_add_card_filter_not (s := (Finset.univ : Finset (BitVec n))) (p := p)
-  rw [hv, Finset.card_univ, Fintype.card_bitVec] at h
+lemma choose_two : Nat.choose 8192 2 = 33550336 := by rw [Nat.choose_two_right]
+lemma choose_three : Nat.choose 8192 3 = 91592417280 := by
+  have h := Nat.choose_succ_right_eq 8192 2
+  norm_num [choose_two] at h
+  omega
+lemma choose_four : Nat.choose 8192 4 = 187512576276480 := by
+  have h := Nat.choose_succ_right_eq 8192 3
+  norm_num [choose_three] at h
   omega
 
-private theorem uniform_miss_count (hidx : idxBits ≤ hashBits)
-    (hM : numCuts ≤ 2 ^ idxBits) (a : ℝ≥0∞) :
-    E ($ᵗ BitVec hashBits) (fun w => if idxOf w < numCuts then 0 else a) =
-      ((2 ^ hashBits - numCuts * 2 ^ (hashBits - idxBits) : ℕ) : ℝ≥0∞) *
-        (((2 ^ hashBits : ℕ) : ℝ≥0∞)⁻¹ * a) := by
-  have hv : (Finset.univ.filter fun w : BitVec hashBits => idxOf w < numCuts).card =
-      numCuts * 2 ^ (hashBits - idxBits) := by
-    have h := Analysis.card_idxOfOut_mem hidx (Finset.range numCuts)
-      (fun n hn => (Finset.mem_range.mp hn).trans_le hM)
-    convert h using 1 <;> simp [Analysis.idxOfOut, idxOf]
-  have hn : (Finset.univ.filter fun w : BitVec hashBits => ¬ idxOf w < numCuts).card =
-      2 ^ hashBits - numCuts * 2 ^ (hashBits - idxBits) :=
-    card_filter_not_bitVec _ hv
-  rw [E_uniform]
-  simp only [mul_ite, mul_zero]
-  rw [Finset.sum_ite, Finset.sum_const_zero, zero_add, Finset.sum_const,
-    nsmul_eq_mul, hn, Fintype.card_bitVec]
+lemma reciprocal_block : (256:ℝ)/127 ≤ (1+8999/104848601)^8192 := by
+  have h := quartic_binomial_lower (8999/104848601) (by norm_num) 8192 (by norm_num)
+  rw [choose_two, choose_three, choose_four] at h
+  have hc : (256:ℝ)/127 ≤ 1+(8192:ℝ)*(8999/104848601)+
+      33550336*(8999/104848601)^2+91592417280*(8999/104848601)^3+
+      187512576276480*(8999/104848601)^4 := by norm_num
+  exact hc.trans h
 
-attribute [local semireducible] hashBits blockBits pkBits msgBits securityBits maxSignatureBits keygenBudget signBudget nonceBits idxBits numCuts trials
+lemma block : (1-(8999:ℝ)/104857600)^8192 ≤ 127/256 := by
+  have hn : 0 ≤ (1-(8999:ℝ)/104857600)^8192 := by positivity
+  have hp : (1-(8999:ℝ)/104857600)^8192*(1+8999/104848601)^8192=1 := by
+    have hb : (1-(8999:ℝ)/104857600)*(1+8999/104848601)=1 := by norm_num
+    rw [← mul_pow, hb, one_pow]
+  have h := mul_le_mul_of_nonneg_left reciprocal_block hn
+  rw [hp] at h
+  have hv := (le_div_iff₀ (by norm_num : (0:ℝ) < 256/127)).2 h
+  simpa only [one_div_div] using hv
 
-private theorem uniform_miss (a : ℝ≥0∞) :
-    E ($ᵗ BitVec hashBits)
-      (fun w => if idxOf w < numCuts then 0 else a) = miss * a := by
-  rw [uniform_miss_count (by decide) (by norm_num [nonceBits, idxBits, numCuts, trials, idxCost, blockCost, signBudget, msgBits, blockBits])]
-  rw [← mul_assoc]
-  congr 1
-  rw [← div_eq_mul_inv]
-  apply (ENNReal.div_eq_div_iff (by norm_num [hashBits, blockBits, pkBits, msgBits, securityBits, maxSignatureBits, keygenBudget, signBudget]) (by finiteness)
-    (by norm_num) (by finiteness)).2
-  norm_num [miss, hashBits, blockBits, pkBits, msgBits, securityBits, maxSignatureBits, keygenBudget, signBudget, nonceBits, idxBits, numCuts, trials, idxCost, blockCost, signBudget, msgBits, blockBits]
+lemma extra_half : ((127:ℝ)/128)^128 ≤ 1/2 := by
+  have h := linear_binomial_lower ((1:ℝ)/127) (by norm_num) 128 (by norm_num)
+  have hlo : (2:ℝ) ≤ (1+1/127)^128 := by linarith
+  have hn : 0 ≤ ((127:ℝ)/128)^128 := by positivity
+  have hp : ((127:ℝ)/128)^128*(1+1/127)^128=1 := by
+    have hb : ((127:ℝ)/128)*(1+1/127)=1 := by norm_num
+    rw [← mul_pow, hb, one_pow]
+  have hmul := mul_le_mul_of_nonneg_left hlo hn
+  rw [hp] at hmul
+  linarith
 
-/-- Exact failure probability while enough untried nonces remain and their queries are fresh. -/
-theorem loop_failure (m : Message) :
-    ∀ (k : ℕ) (tried : Finset Nonce) (c : Cache),
-      tried.card + k ≤ 2 ^ nonceBits →
-      (∀ η ∉ tried, c (encQuery (m ++ η)) = none) →
-      E (run (signIdxLoop m k tried) c)
-        (fun p => if p.1.isNone then 1 else 0) = miss ^ k := by
-  intro k
-  induction k with
-  | zero =>
-    intro tried c _ _
-    simp [signIdxLoop, run_pure]
-  | succ k ih =>
-    intro tried c hbudget hfresh
-    have hc : 0 < (Finset.univ \ tried).card := by
-      rw [Finset.card_univ_sdiff, Fintype.card_bitVec]
-      omega
-    rw [signIdxLoop_succ m k tried hc, run_query_bind, oracleImpl_run_inl]
-    simp only [bind_assoc, pure_bind, E_bind]
-    have hbody : ∀ j,
-        E (run (loopBody m k tried (nonceOf tried hc j)) c)
-          (fun p => if p.1.isNone then 1 else 0) = miss ^ (k + 1) := by
-      intro j
-      let η := nonceOf tried hc j
-      have hη : η ∉ tried := (Finset.mem_sdiff.mp (nonceOf_mem tried hc j)).2
-      rw [loopBody, run_query_bind, oracleImpl_run_inr_none (hfresh η hη)]
-      simp only [bind_assoc, pure_bind, E_bind]
-      have hkont : ∀ w : BitVec hashBits,
-          E (run (afterHash m k tried η w)
-            (c.cacheQuery (encQuery (m ++ η)) w))
-            (fun p => if p.1.isNone then 1 else 0) =
-          if idxOf w < numCuts then 0 else miss ^ k := by
-        intro w
-        unfold afterHash
-        by_cases hw : idxOf w < numCuts
-        · rw [dif_pos hw, if_pos hw, run_pure, E_pure]
-          rfl
-        · rw [dif_neg hw, if_neg hw]
-          apply ih
-          · rw [Finset.card_insert_of_notMem hη]
-            omega
-          · intro η' hη'
-            have hne : encQuery (m ++ η') ≠ encQuery (m ++ η) := by
-              intro heq
-              have he := append_nonce_inj m (encQuery_inj heq)
-              exact hη' (he ▸ Finset.mem_insert_self η tried)
-            rw [QueryCache.cacheQuery_of_ne _ _ hne]
-            exact hfresh η' (fun h => hη' (Finset.mem_insert_of_mem h))
-      calc
-        _ = E ($ᵗ BitVec hashBits)
-            (fun w => if idxOf w < numCuts then 0 else miss ^ k) := by
-          congr 1
-          funext w
-          exact hkont w
-        _ = _ := by rw [uniform_miss, pow_succ, mul_comm]
-    simp_rw [hbody]
-    exact expectedValue_const (by simp) _
-
-/-- A rational bound on repeated failure; it avoids real exponentials. -/
-private theorem bernoulli_reciprocal {p : ℝ} (hp : 0 ≤ p) (hp1 : p ≤ 1) (k : ℕ) :
-    (1 - p) ^ k ≤ 1 / (1 + (k : ℝ) * p) := by
-  have hr : 0 ≤ 1 - p := sub_nonneg.mpr hp1
-  have hprod : ∀ n : ℕ, (1 + (n : ℝ) * p) * (1 - p) ^ n ≤ 1 := by
-    intro n
-    induction n with
-    | zero => simp
-    | succ n ih =>
-      rw [Nat.cast_add_one, pow_succ]
-      have hc : (1 + ((n : ℝ) + 1) * p) * (1 - p) ≤ 1 + (n : ℝ) * p := by
-        have hn : 0 ≤ (n : ℝ) := Nat.cast_nonneg _
-        nlinarith [sq_nonneg p]
-      have hh := mul_le_mul_of_nonneg_right hc (pow_nonneg hr n)
-      nlinarith
-  have hd : 0 < 1 + (k : ℝ) * p := by positivity
-  rw [le_div_iff₀ hd]
-  simpa only [mul_comm] using hprod k
-
-/-- A block of 8192 trials fails with probability at most one half. -/
-private theorem miss_block : miss ^ 8192 ≤ 1 / 2 := by
-  have h := bernoulli_reciprocal (p := (1 : ℝ) / 8192) (by norm_num) (by norm_num) 8192
-  have hbase : (1 : ℝ) - 1 / 8192 = 8191 / 8192 := by norm_num
-  have hden : 1 + ((8192 : ℕ) : ℝ) * (1 / 8192) = 2 := by norm_num
-  rw [hbase, hden] at h
-  have h' := ENNReal.ofReal_le_ofReal h
-  rw [ENNReal.ofReal_pow (by norm_num)] at h'
-  have hb : ENNReal.ofReal ((8191 : ℝ) / 8192) = miss := by
-    norm_num [miss, ENNReal.ofReal_div_of_pos]
-  have hh : ENNReal.ofReal ((1 : ℝ) / 2) = (1 / 2 : ℝ≥0∞) := by
-    norm_num [ENNReal.ofReal_div_of_pos]
-  rwa [hb, hh] at h'
-
-/-- The full signing budget contains 128 blocks, each with failure at most one half. -/
-theorem miss_trials_le : miss ^ trials ≤ 1 / 2 ^ 128 := by
-  change miss ^ (8192 * 128) ≤ 1 / 2 ^ 128
-  rw [pow_mul]
+/-- Complete-row empirical acceptance slack leaves half the failure budget.
+This is arithmetic, not yet the actual replacement signer's availability proof. -/
+theorem empirical_failure :
+    (1-(8999:ℝ)/104857600)^(2^20:ℕ) ≤ ((2:ℝ)^129)⁻¹ := by
+  have he : (2^20:ℕ)=8192*128 := by norm_num
+  rw [he, pow_mul]
   calc
-    (miss ^ 8192) ^ 128 ≤ (1 / 2 : ℝ≥0∞) ^ 128 := pow_le_pow_left' miss_block _
-    _ = 1 / 2 ^ 128 := by simp only [one_div, ENNReal.inv_pow]
+    ((1-(8999:ℝ)/104857600)^8192)^128 ≤ ((127:ℝ)/256)^128 :=
+      pow_le_pow_left₀ (by positivity) block 128
+    _ = ((1:ℝ)/2)^128*((127:ℝ)/128)^128 := by rw [← mul_pow]; norm_num
+    _ ≤ ((1:ℝ)/2)^128*(1/2) := mul_le_mul_of_nonneg_left extra_half (by positivity)
+    _ = ((2:ℝ)^129)⁻¹ := by norm_num
 
-/-- Signing has the same failure probability for every message and every fresh index cache. -/
-theorem sign_failure (x : forestScheme.graph.Assignment) (m : Message)
-    (c : Cache) (hfresh : ∀ η : Nonce, c (encQuery (m ++ η)) = none) :
-    E (run (forestScheme.sign x m) c)
-      (fun p => if p.1.isNone then 1 else 0) = miss ^ trials := by
-  rw [sign_eq_map, run_map, E_map]
-  simp only [Option.isNone_map]
-  exact loop_failure m _ ∅ c (by norm_num [nonceBits, idxBits, numCuts, trials, idxCost, blockCost, signBudget, msgBits, blockBits]) (fun η _ => hfresh η)
-
-/-- Failure remains bounded even when the message is chosen after seeing the public key. -/
-theorem signingFailure_strong :
-    forestScheme.toAlgorithm.SigningFailureAtMost (1 / 2 ^ 128 : ℝ≥0∞) := by
-  intro message
-  change probTrue (do
-    let kg ← forestScheme.keygen
-    let σ ← forestScheme.sign kg.2 (message kg.1)
-    pure σ.isNone) ≤ _
-  rw [probTrue_eq_E_run, run_bind, E_bind, E_run_keygen_forest]
-  simp only [run_bind, E_bind, run_pure, E_pure]
-  have hs : ∀ ξ : Rec,
-      E (run (forestScheme.sign (graph.evalRec ξ) (message (pkOf ξ))) (kc ξ))
-        (fun p => if p.1.isNone then 1 else 0) = miss ^ trials := by
-    intro ξ
-    exact sign_failure _ _ _ (fun η => kc_enc ξ _)
-  simp_rw [hs]
-  rw [← Finset.sum_mul, sum_w, one_mul]
-  exact miss_trials_le
-
-end OptimalOTS.Forest.Availability
-
-namespace OptimalOTS.GenericAvailability
-
-open OptimalOTS.Dag
-
-
-/-- The forest algorithm meets the generic upper challenge's signing-failure allowance. -/
-theorem signingFailure :
-    Forest.forestScheme.toAlgorithm.SigningFailureAtMost (1 / 2 ^ 128 : ℝ≥0∞) := by
-  intro message
-  exact (Forest.Availability.signingFailure_strong message).trans (by norm_num)
-
-end OptimalOTS.GenericAvailability
+#print axioms empirical_failure
+end WeightedAvailability

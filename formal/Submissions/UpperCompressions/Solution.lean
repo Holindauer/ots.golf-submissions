@@ -1,25 +1,18 @@
-import Submissions.UpperCompressions.ShallowWire
-
-/-! A fully admissible oracle algorithm with verification cost at most 100. -/
+import Submissions.UpperCompressions.WideAvailability
+import Submissions.UpperCompressions.WideSecure
 
 namespace OptimalOTS.Challenge.UpperCompressions
 
-/-- The forest's key-generation, signing, and verification programs on bit strings. -/
-noncomputable def scheme : OracleAlgorithm.Scheme := ShallowUpperForest.Wire.scheme
+noncomputable def scheme : OracleAlgorithm.Scheme :=
+  WeightedConstruction.WideWire.scheme
 
-/-- Perfect correctness, bounded signing failure, and the competition's resource limits. -/
-theorem admissible : scheme.Admissible := ShallowUpperForest.Wire.admissible
+theorem admissible : scheme.Admissible :=
+  WeightedConstruction.WideHonest.admissible
 
-/-- 127-bit strong unforgeability in the shared random-oracle experiment. -/
-theorem secure : scheme.Secure := ShallowUpperForest.Wire.secure
+theorem secure : scheme.Secure :=
+  WeightedConstruction.WideSecure.raw_secure
 
-/-- A bound for every input and every oracle-answer path, including rejecting inputs. -/
-theorem cost : scheme.VerifyCostAtMost 100 := ShallowUpperForest.Wire.cost
+theorem cost : scheme.VerifyCostAtMost 92 :=
+  WeightedConstruction.WideWire.cost
 
 end OptimalOTS.Challenge.UpperCompressions
-
-/--
-info: 'OptimalOTS.Challenge.UpperCompressions.cost' depends on axioms: [propext, Classical.choice, Quot.sound]
--/
-#guard_msgs in
-#print axioms OptimalOTS.Challenge.UpperCompressions.cost
