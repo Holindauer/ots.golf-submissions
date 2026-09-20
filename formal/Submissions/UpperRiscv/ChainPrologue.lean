@@ -183,6 +183,6 @@ theorem jalr_transition (s : MachineState) (i : BitVec 12)
   rfl
 
 theorem notCtx_of_prologue (r : Reg) (h : CtxReg r) : r ≠ .x10 ∧ r ≠ .x12 ∧ r ≠ .x28 := by
-  rcases h with rfl | rfl | rfl | rfl | rfl | rfl <;> (refine ⟨?_, ?_, ?_⟩ <;> decide)
+  rcases h with rfl | rfl | rfl | rfl | rfl <;> (refine ⟨?_, ?_, ?_⟩ <;> decide)
 
 end OptimalOTS.Riscv2Program

@@ -47,7 +47,7 @@ def sigBits : ℕ := 5504
 /-! ## The index phase -/
 
 def indexPrefix : Code :=
-  [.ADDI .x9 .x12 16, .LD .x30 .x10 0, .LD .x31 .x10 8, .ADDI .x10 .x11 0,
+  [.LD .x30 .x10 0, .LD .x31 .x10 8, .ADDI .x10 .x11 0,
    .ADDI .x11 .x0 384, .LUI .x12 0x200, .ADDI .x5 .x0 1]
 
 def lengthCheck : Code := [.LD .x6 .x12 (BitVec.ofNat 12 72), .BEQ .x13 .x6 16] ++ reject
@@ -125,7 +125,7 @@ def chains : Code := (List.range C).flatMap chainBlock
 
 /-- The root hash reads the 680-byte region and writes its answer over the last top, where the
 answer buffer already points. -/
-def root : Code := [.ADDI .x10 .x9 (imm12 (-8)), .ADDI .x11 .x13 (imm12 (-64)), .ECALL]
+def root : Code := [.ADDI .x10 .x10 (imm12 (-656)), .ADDI .x11 .x13 (imm12 (-64)), .ECALL]
 
 def decision : Code :=
   [.LD .x26 .x12 0, .BNE .x26 .x30 24, .LD .x28 .x12 8, .BNE .x28 .x31 16,
