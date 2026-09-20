@@ -1071,7 +1071,7 @@ variable {M : ℕ}
 abbrev Nonce (n : ℕ) := BitVec n
 abbrev Winner (n M : ℕ) := Nonce n × Fin M
 
-def candidate (decode : BitVec hashBits → Option (Fin M)) (η : Nonce n)
+def candidate {n : ℕ} (decode : BitVec hashBits → Option (Fin M)) (η : Nonce n)
     (w : BitVec hashBits) : Option (Winner n M) :=
   (fun i => (η, i)) <$> decode w
 

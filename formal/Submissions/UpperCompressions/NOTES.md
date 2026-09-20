@@ -113,3 +113,45 @@ disclosure-family geometry together, then reuse the exact first-minimum kernel
 and the common-budget proof. A promising numerical schedule still needs its
 finite class embedding, all-input resource bound, and actual-game security
 connection checked before it can support another claim.
+
+## Follow-up experiments: where a larger gain could come from
+
+The next experiments below are research calculations, not additional Lean
+security claims. Write `C = 2^-127 * 2^20 * M`, where M is the number of
+accepted cut classes. The current construction uses C≈4.75. An exact finite
+sampling argument gives a floor very close to4 for the present class-reuse
+strategy. A restricted actual replay calculation supports the same floor;
+it does not give a lower bound for arbitrary signature algorithms.
+
+Changing the tree helps, but not enough by itself. Among21,209 screened
+heterogeneous129-bit trees, the largest class capacity at91 compressions was
+C=4.0445558341. Mixed reconstruction ranks added negligibly to that count.
+It leaves little room above the class-reuse floor for the adaptive security
+analysis. Uniform, mixed-arity and regular two-level families did not produce
+a larger lead. These searches are bounded families, not an exhaustive search
+over all trees or DAGs.
+
+A more substantial structural change uses43 words of126bits plus an86-bit
+nonce, still exactly5504bits. Four such words and an8-bit tag fit one512-bit
+compression. A tree with70 chains of length14 and23 four-child branch nodes
+uses1003 key-generation compressions and has raw capacity C=6.1843987025 at
+verification88. Its weaker authentication has no security proof, and variable
+disclosure lengths still need a canonical wire encoding.
+
+One proposed safeguard was to retain only cuts such that moving between any
+two requires at least two separately hidden chain coordinates in each
+direction. Ordinary Hamming distance is insufficient: a long backward move
+on one chain still needs only one hidden coordinate. The stronger directed
+condition loses too many classes. Within each fixed structural frontier,
+puncturing any three coordinates must be injective on such a code. Counting
+the possible projections, including all allowed reconstruction ranks, gives
+an upper bound C≤0.675761 across all11,420 screened126-bit trees. Requiring
+three hidden coordinates and puncturing five lowers this to C≤0.068389.
+These bounds require the condition across ranks as well as within a rank.
+
+This rules out that particular global cut-code safeguard in the screened
+trees. It leaves a concrete question: can an actual-game analysis safely
+permit some nearby cut pairs, or can a construction obtain comparable class
+capacity with stronger authentication? A raw capacity count alone cannot
+answer that question. The92-compression construction remains the proved
+candidate described above.

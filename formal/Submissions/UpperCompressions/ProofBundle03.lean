@@ -3144,7 +3144,7 @@ open scoped Classical
 
 namespace OptimalOTS.WeightedSampling.Availability
 
-variable {M : ℕ}
+variable {M n : ℕ} {α : Type}
 
 theorem nonce_suffix (m : Message) (η : Nonce n) : (m++η).setWidth n = η := by
   ext j hj
